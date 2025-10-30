@@ -1,38 +1,45 @@
-import sprites
 import pygame
-from config import *
-pygame.init()
+from config import FPS, WIDTH, HEIGHT, BLACK, YELLOW, RED
+from assets import load_assets, PLAYER_IMG
+from sprites import Player
 
-screen = pygame.display.set_mode((WIDTH,HEIGHT))
-pygame.display.set_caption("CastleInsper")
-
-clock = pygame.time.Clock()
-FPS = 60
-
-DONE = 0
-PLAYING = 1
-EXPLODING = 2
-state = PLAYING
-score = 0
-keys_down = {}
-
-jogador = sprites.Jogador()
-while state != DONE:
-    clock.tick(FPS)
-    for event in pygame.event.get():
-        # ----- Verifica consequências
-        if event.type == pygame.QUIT:
-            state = DONE
-        # Só verifica o teclado se está no estado de jogo
-        if state == PLAYING:
-            # Verifica se apertou alguma tecla.
+def game_screen(window):
+    clock = pygame.time.Clock()
+    all_sprites = pygame.sprite.Group()
+    assets = load_assets()
+    player = Player(all_sprites, assets)
+    all_sprites.add(player)
+    running = True
+    keys_down = {}
+    while running:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
             if event.type == pygame.KEYDOWN:
                 keys_down[event.key] = True
                 if event.key == pygame.K_LEFT:
-                    sprites.Jogador.speedx -= 8
+                    player.image = pygame.transform.flip(assets[PLAYER_IMG], True, False)
+                    player.speedx = -5
                 if event.key == pygame.K_RIGHT:
-                    sprites.Jogador.speedx += 8
+                    player.image = assets[PLAYER_IMG]
+                    player.speedx = 5
                 if event.key == pygame.K_UP:
-                    sprites.Jogador.speedy +=3
-    sprites.Jogador.update()
-pygame.quit()
+                    player.speedy = -5
+                if event.key == pygame.K_DOWN:
+                    player.speedy = 5
+            if event.type == pygame.KEYUP:
+                if event.key in keys_down:
+                    del keys_down[event.key]
+                if event.key == pygame.K_LEFT and player.speedx < 0:
+                    player.speedx = 0
+                if event.key == pygame.K_RIGHT and player.speedx > 0:
+                    player.speedx = 0
+                if event.key == pygame.K_UP and player.speedy < 0:
+                    player.speedy = 0
+                if event.key == pygame.K_DOWN and player.speedy > 0:
+                    player.speedy = 0
+        all_sprites.update()
+        window.fill(BLACK)
+        all_sprites.draw(window)
+        pygame.display.flip()
