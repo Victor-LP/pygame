@@ -25,9 +25,7 @@ def game_screen(window):
                     player.image = assets[PLAYER_IMG]
                     player.speedx = 5
                 if event.key == pygame.K_UP:
-                    player.speedy = -5
-                if event.key == pygame.K_DOWN:
-                    player.speedy = 5
+                    player.jump()
             if event.type == pygame.KEYUP:
                 if event.key in keys_down:
                     del keys_down[event.key]
@@ -39,6 +37,7 @@ def game_screen(window):
                     player.speedy = 0
                 if event.key == pygame.K_DOWN and player.speedy > 0:
                     player.speedy = 0
+        player.speedy = 5
         all_sprites.update()
         window.fill(BLACK)
         all_sprites.draw(window)

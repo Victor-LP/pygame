@@ -12,10 +12,15 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = HEIGHT - 10
         self.speedx = 0
         self.speedy = 0
+        self.jump_strength = -25
+        self.vel_y = 0
+        self.gravity = 0.8
 
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
+        self.vel_y += self.gravity
+        self.rect.y += self.vel_y
         if self.rect.right > WIDTH:
             self.rect.right = WIDTH
         if self.rect.left < 0:
@@ -24,6 +29,15 @@ class Player(pygame.sprite.Sprite):
             self.rect.top = 0
         if self.rect.bottom > HEIGHT:
             self.rect.bottom = HEIGHT
+        if self.rect.bottom >= HEIGHT:
+            self.on_ground = True
+        else:
+            self.on_ground = False
+
+    def jump(self):
+        if self.on_ground:
+            self.vel_y = self.jump_strength
+            self.on_ground = False
 # class Jogador(pygame.sprite.Sprite):
 #     def __init__(self,groups,assets,nome):
 #         pygame.sprite.Sprite.__init__(self)

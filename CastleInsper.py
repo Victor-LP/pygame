@@ -7,7 +7,7 @@ pygame.init()
 pygame.mixer.init()
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Navinha')
+pygame.display.set_caption('Castle Insper')
 
 game_screen(window)
 
