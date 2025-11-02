@@ -11,6 +11,7 @@ def game_screen(window):
     all_sprites.add(player)
     running = True
     keys_down = {}
+    pygame.key.set_repeat(1, 10)
     while running:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -18,24 +19,22 @@ def game_screen(window):
                 running = False
             if event.type == pygame.KEYDOWN:
                 keys_down[event.key] = True
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_a:
                     player.image = pygame.transform.flip(assets[PLAYER_IMG], True, False)
                     player.speedx = -5
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_d:
                     player.image = assets[PLAYER_IMG]
                     player.speedx = 5
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_w:
                     player.jump()
             if event.type == pygame.KEYUP:
                 if event.key in keys_down:
                     del keys_down[event.key]
-                if event.key == pygame.K_LEFT and player.speedx < 0:
+                if event.key == pygame.K_a and player.speedx < 0:
                     player.speedx = 0
-                if event.key == pygame.K_RIGHT and player.speedx > 0:
+                if event.key == pygame.K_d and player.speedx > 0:
                     player.speedx = 0
-                if event.key == pygame.K_UP and player.speedy < 0:
-                    player.speedy = 0
-                if event.key == pygame.K_DOWN and player.speedy > 0:
+                if event.key == pygame.K_w and player.speedy < 0:
                     player.speedy = 0
         player.speedy = 5
         all_sprites.update()
