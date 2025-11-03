@@ -10,9 +10,16 @@ def game_screen(window):
     # Sprites de block são aqueles que impedem o movimento do jogador
     blocks = pygame.sprite.Group()
     assets = load_assets()
-    player = Player(all_sprites, assets)
-    zombie = Zombie(all_sprites, assets)
-    all_sprites.add(player, zombie)
+
+    all_enemies = pygame.sprite.Group()
+    all_attacks = pygame.sprite.Group()
+    groups = {}
+    groups['all_sprites'] = all_sprites
+    groups['all_enemies'] = all_enemies
+    groups['all_attacks'] = all_attacks
+    player = Player(groups, assets)
+    zombie = Zombie(groups, assets)
+    all_sprites.add(player,zombie)
     running = True
     keys_down = {}
     pygame.key.set_repeat(1, 10)
@@ -27,34 +34,35 @@ def game_screen(window):
 
     while running:
         clock.tick(FPS)
+        hits = pygame.sprite.groupcollide(all_enemies, all_attacks, True, True, pygame.sprite.collide_mask)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
                 keys_down[event.key] = True
                 if event.key == pygame.K_a:
-                    player.image = pygame.transform.flip(assets[PLAYER_IMG], True, False)
-                    player.speedx = -5
+                    player.direction = -1
+                    player.speedx = 5
                 if event.key == pygame.K_d:
-                    player.image = assets[PLAYER_IMG]
+                    player.direction = 1
                     player.speedx = 5
                 if event.key == pygame.K_w:
                     player.jump()
+                if event.key == pygame.K_SPACE:
+                    player.attack()
             if event.type == pygame.KEYUP:
                 if event.key in keys_down:
                     del keys_down[event.key]
-                if event.key == pygame.K_a and player.speedx < 0:
+                if event.key == pygame.K_a:
                     player.speedx = 0
-                if event.key == pygame.K_d and player.speedx > 0:
+                if event.key == pygame.K_d:
                     player.speedx = 0
                 if event.key == pygame.K_w and player.speedy < 0:
-                    player.speedy = 0
-
-    
-
+                    player.direction = 0
+                    player.speedx = 0
         player.speedy = 5
         all_sprites.update()
-        zombie.move_towards_player(player,assets)
+        zombie.move_to_player(player,assets)
         window.fill(GRAY)
         all_sprites.draw(window)
         pygame.display.flip()

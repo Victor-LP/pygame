@@ -1,7 +1,7 @@
 import pygame
 import random
 from config import WIDTH, HEIGHT, BLOCK, EMPTY
-from assets import PLAYER_IMG, ZOMBIE_IMG
+from assets import PLAYER_IMG, ZOMBIE_IMG, ATTACK_IMG
 
 
 TILE_SIZE = 65
@@ -50,8 +50,8 @@ class Player(pygame.sprite.Sprite):
     def __init__(self,groups,assets):
         pygame.sprite.Sprite.__init__(self)
         self.image = assets[PLAYER_IMG]
-        self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 10
         self.speedx = 0
@@ -59,10 +59,19 @@ class Player(pygame.sprite.Sprite):
         self.jump_strength = -20
         self.vel_y = 0
         self.gravity = gavity
+        self.last_attack = 0
+        self.attack_ticks = 500  # Tempo mínimo entre ataques em milissegundos
+        self.groups = groups
+        self.assets = assets
+        self.direction = 1
 
     def update(self):
-        self.rect.x += self.speedx
+        self.rect.x += self.speedx*self.direction
         self.rect.y += self.speedy
+        if self.direction == -1:
+            self.image = pygame.transform.flip(self.assets[PLAYER_IMG], True, False)
+        else:
+            self.image = self.assets[PLAYER_IMG]
         self.vel_y += self.gravity
         self.rect.y += self.vel_y
         if self.rect.right > WIDTH:
@@ -82,12 +91,28 @@ class Player(pygame.sprite.Sprite):
         if self.on_ground:
             self.vel_y = self.jump_strength
             self.on_ground = False
+
+    def attack(self):
+        now = pygame.time.get_ticks()
+        elapsed_ticks = now - self.last_attack
+
+        # Se já pode atirar novamente...
+        if elapsed_ticks > self.attack_ticks:
+            # Marca o tick da nova imagem.
+            self.last_attack = now
+            if self.direction==1:
+                new_attack = Attack(self.assets, self.rect.centerx, self.rect.y, 1)
+            else:
+                new_attack = Attack(self.assets, self.rect.x, self.rect.y, -1)
+            self.groups['all_sprites'].add(new_attack)
+            self.groups['all_attacks'].add(new_attack)
+
 class Zombie(pygame.sprite.Sprite):
     def __init__(self,groups,assets):
         pygame.sprite.Sprite.__init__(self)
         self.image = assets[ZOMBIE_IMG]
-        self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
         self.rect.centerx = random.randint(0, WIDTH)
         self.rect.bottom = HEIGHT - 10
         self.speedx = 0
@@ -111,7 +136,7 @@ class Zombie(pygame.sprite.Sprite):
             self.on_ground = True
         else:
             self.on_ground = False
-    def move_towards_player(self, player,assets):
+    def move_to_player(self, player,assets):
         if self.rect.x < player.rect.x:
             self.speedx = 2
             self.image = assets[ZOMBIE_IMG]
@@ -122,6 +147,27 @@ class Zombie(pygame.sprite.Sprite):
             self.speedx = 0
 
 
+class Attack(pygame.sprite.Sprite):
+    def __init__(self, assets, x, y, direction):
+        pygame.sprite.Sprite.__init__(self)
+        if direction == -1:
+            self.image = pygame.transform.flip(assets[ATTACK_IMG], True, False)
+        else:
+            self.image = assets[ATTACK_IMG]
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.speedx = 10*direction
+        spawn_time = pygame.time.get_ticks()
+        self.spawn_time = spawn_time
+        self.duration = 50  # Duração em milissegundos
+    def update(self):
+        self.rect.x += self.speedx
+        now = pygame.time.get_ticks()
+        elapsed = now - self.spawn_time
+        if elapsed > self.duration:
+            self.kill()
 # class Jogador(pygame.sprite.Sprite):
 #     def __init__(self,groups,assets,nome):
 #         pygame.sprite.Sprite.__init__(self)
