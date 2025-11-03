@@ -32,3 +32,7 @@ GRAY = (100, 100, 100)
 INIT = 0
 GAME = 1
 QUIT = 2
+
+
+BLOCK = 0
+EMPTY = -1

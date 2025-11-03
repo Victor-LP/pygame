@@ -1,11 +1,14 @@
 import pygame
 from config import FPS, WIDTH, HEIGHT, BLACK, YELLOW, RED, GRAY
 from assets import load_assets, PLAYER_IMG
-from sprites import Player, Zombie
+from sprites import Player, Zombie, Tile, MAP, BLOCK
 
 def game_screen(window):
     clock = pygame.time.Clock()
     all_sprites = pygame.sprite.Group()
+    # Cria um grupo somente com os sprites de bloco.
+    # Sprites de block são aqueles que impedem o movimento do jogador
+    blocks = pygame.sprite.Group()
     assets = load_assets()
     player = Player(all_sprites, assets)
     zombie = Zombie(all_sprites, assets)
@@ -13,6 +16,15 @@ def game_screen(window):
     running = True
     keys_down = {}
     pygame.key.set_repeat(1, 10)
+
+    for row in range(len(MAP)):
+        for column in range(len(MAP[row])):
+            tile_type = MAP[row][column]
+            if tile_type == BLOCK:
+                tile = Tile(assets[tile_type], row, column)
+                all_sprites.add(tile)
+                blocks.add(tile)
+
     while running:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -37,6 +49,9 @@ def game_screen(window):
                     player.speedx = 0
                 if event.key == pygame.K_w and player.speedy < 0:
                     player.speedy = 0
+
+    
+
         player.speedy = 5
         all_sprites.update()
         zombie.move_towards_player(player,assets)
