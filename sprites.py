@@ -1,7 +1,8 @@
 import pygame
 import random
-from config import WIDTH, HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT
-from assets import PLAYER_IMG
+from config import WIDTH, HEIGHT
+from assets import PLAYER_IMG, ZOMBIE_IMG
+gavity = 0.6
 class Player(pygame.sprite.Sprite):
     def __init__(self,groups,assets):
         pygame.sprite.Sprite.__init__(self)
@@ -12,9 +13,9 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom = HEIGHT - 10
         self.speedx = 0
         self.speedy = 0
-        self.jump_strength = -25
+        self.jump_strength = -20
         self.vel_y = 0
-        self.gravity = 0.8
+        self.gravity = gavity
 
     def update(self):
         self.rect.x += self.speedx
@@ -38,6 +39,44 @@ class Player(pygame.sprite.Sprite):
         if self.on_ground:
             self.vel_y = self.jump_strength
             self.on_ground = False
+class Zombie(pygame.sprite.Sprite):
+    def __init__(self,groups,assets):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = assets[ZOMBIE_IMG]
+        self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect.centerx = random.randint(0, WIDTH)
+        self.rect.bottom = HEIGHT - 10
+        self.speedx = 0
+        self.speedy = 0
+        self.vel_y = 0
+        self.gravity = gavity
+    def update(self):
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+        self.vel_y += self.gravity
+        self.rect.y += self.vel_y
+        if self.rect.right > WIDTH:
+            self.rect.right = WIDTH
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.top < 0:
+            self.rect.top = 0
+        if self.rect.bottom > HEIGHT:
+            self.rect.bottom = HEIGHT
+        if self.rect.bottom >= HEIGHT:
+            self.on_ground = True
+        else:
+            self.on_ground = False
+    def move_towards_player(self, player,assets):
+        if self.rect.x < player.rect.x:
+            self.speedx = 2
+            self.image = assets[ZOMBIE_IMG]
+        elif self.rect.x > player.rect.x:
+            self.speedx = -2
+            self.image = pygame.transform.flip(assets[ZOMBIE_IMG], True, False)
+        else:
+            self.speedx = 0
 # class Jogador(pygame.sprite.Sprite):
 #     def __init__(self,groups,assets,nome):
 #         pygame.sprite.Sprite.__init__(self)
