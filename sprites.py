@@ -131,6 +131,49 @@ class Zombie(pygame.sprite.Sprite):
         else:
             self.speedx = 0
 
+class Bat(pygame.sprite.Sprite):
+    def __init__(self, groups, assets):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = assets[ZOMBIE_IMG]  # TROCAR PARA MORÇEGO DEPOIS.
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.mask.get_rect()
+
+        self.rect.centerx = random.randint(0, WIDTH)
+        self.rect.y = random.randint(40, HEIGHT // 3)
+
+        self.groups = groups
+        self.assets = assets
+
+        self.direction = 1
+        self.speed = 2
+        self.switch_interval = 1500
+        self.last_switch = pygame.time.get_ticks()
+
+    def update(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_switch >= self.switch_interval:
+            self.direction *= -1
+            self.last_switch = now
+
+        self.rect.x += self.speed * self.direction
+
+        if self.direction == -1:
+            self.image = pygame.transform.flip(self.assets[ZOMBIE_IMG], True, False) # TROCAR PARA MORÇEGO DEPOIS.
+        else:
+            self.image = self.assets[ZOMBIE_IMG] # TROCAR PARA MORÇEGO DEPOIS.
+
+        if self.rect.right > WIDTH:
+            self.rect.right = WIDTH
+            self.direction = -1
+            self.last_switch = now
+        if self.rect.left < 0:
+            self.rect.left = 0
+            self.direction = 1
+            self.last_switch = now
+
+    def move_to_player(self, player, assets):
+        return
+
 
 class Attack(pygame.sprite.Sprite):
     def __init__(self, assets, x, y, direction):

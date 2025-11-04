@@ -3,7 +3,7 @@
 import pygame
 from config import FPS, WIDTH, HEIGHT, BLACK, YELLOW, RED, GRAY, BLOCK_WIDTH, BLOCK_HEIGHT
 from assets import load_assets, PLAYER_IMG, BLOCK_IMG
-from sprites import Player, Zombie, Tile, MAP, BLOCK
+from sprites import Player, Zombie, Bat, Tile, MAP, BLOCK
 
 def game_screen(window):
     clock = pygame.time.Clock()
@@ -38,12 +38,18 @@ def game_screen(window):
     groups['all_enemies'] = all_enemies
     groups['all_attacks'] = all_attacks
 
+#Zombies
     player = Player(groups, assets)
     zombie1 = Zombie(groups, assets)
     zombie2 = Zombie(groups, assets)
     zombie3 = Zombie(groups, assets)
     all_sprites.add(player, zombie1, zombie2, zombie3)
     all_enemies.add(zombie1,zombie2,zombie3)
+#Bats
+    bat1 = Bat(groups, assets)
+    bat2 = Bat(groups, assets)
+    all_sprites.add(bat1, bat2)
+    all_enemies.add(bat1, bat2)
 
     running = True
     keys_down = {}
