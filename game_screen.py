@@ -39,8 +39,11 @@ def game_screen(window):
     groups['all_attacks'] = all_attacks
 
     player = Player(groups, assets)
-    zombie = Zombie(groups, assets)
-    all_sprites.add(player, zombie)
+    zombie1 = Zombie(groups, assets)
+    zombie2 = Zombie(groups, assets)
+    zombie3 = Zombie(groups, assets)
+    all_sprites.add(player, zombie1, zombie2, zombie3)
+    all_enemies.add(zombie1,zombie2,zombie3)
 
     running = True
     keys_down = {}
@@ -49,7 +52,10 @@ def game_screen(window):
     while running:
         clock.tick(FPS)
         hits = pygame.sprite.groupcollide(all_enemies, all_attacks, True, True, pygame.sprite.collide_mask)
-
+        for hit in hits:
+            zombie = Zombie(groups, assets)
+            all_sprites.add(zombie)
+            all_enemies.add(zombie)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -80,7 +86,8 @@ def game_screen(window):
 
         player.speedy = 5
         all_sprites.update()
-        zombie.move_to_player(player, assets)
+        for enemy in all_enemies:
+            enemy.move_to_player(player, assets)
 
         window.fill(GRAY)
         all_sprites.draw(window)

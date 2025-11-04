@@ -46,7 +46,7 @@ class Player(pygame.sprite.Sprite):
         self.jump_strength = -20
         self.vel_y = 0
         self.last_attack = 0
-        self.attack_ticks = 500  # Tempo mínimo entre ataques em milissegundos
+        self.attack_ticks = 300  # Tempo mínimo entre ataques em milissegundos
         self.groups = groups
         self.assets = assets
         self.direction = 1
@@ -146,7 +146,7 @@ class Attack(pygame.sprite.Sprite):
         self.speedx = 10*direction
         spawn_time = pygame.time.get_ticks()
         self.spawn_time = spawn_time
-        self.duration = 50  # Duração em milissegundos
+        self.duration = 100  # Duração em milissegundos
     def update(self):
         self.rect.x += self.speedx
         now = pygame.time.get_ticks()
