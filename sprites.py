@@ -3,6 +3,8 @@ import random
 from config import WIDTH, HEIGHT, EMPTY, GRAVITY, BLOCK, BLOCK_HEIGHT, BLOCK_WIDTH
 from assets import PLAYER_IMG, ZOMBIE_IMG, ATTACK_IMG, BLOCK_IMG, BAT_IMG
 
+JUMP_SIZE = -20
+
 MAP = [
     [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
     [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
@@ -21,6 +23,10 @@ MAP = [
     [BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK],
 ]
 
+STILL = 0
+JUMPING = 1
+FALLING = 2
+
 class Tile(pygame.sprite.Sprite):
 
     # Construtor da classe.
@@ -35,6 +41,7 @@ class Tile(pygame.sprite.Sprite):
 
 class Player(pygame.sprite.Sprite):
     def __init__(self,groups,assets, all_blocks):
+        self.state = STILL
         pygame.sprite.Sprite.__init__(self)
         self.image = assets[PLAYER_IMG]
         self.mask = pygame.mask.from_surface(self.image)
@@ -67,19 +74,19 @@ class Player(pygame.sprite.Sprite):
         # Corrige a posição do personagem para antes da colisão
         for collision in collisions:
             # Estava indo para baixo
-            if self.speedy > 0:
+            if self.vel_y > 0:
                 self.rect.bottom = collision.rect.top
                 # Se colidiu com algo, para de cair
-                self.speedy = 0
+                self.vel_y = 0
                 # Atualiza o estado para parado
-                self.state = 0
+                self.state = STILL
             # Estava indo para cima
-            elif self.speedy < 0:
+            elif self.vel_y < 0:
                 self.rect.top = collision.rect.bottom
                 # Se colidiu com algo, para de cair
-                self.speedy = 0
+                self.vel_y = 0
                 # Atualiza o estado para parado
-                self.state = 0
+                self.state = STILL
 
 
 
@@ -113,9 +120,10 @@ class Player(pygame.sprite.Sprite):
 
 
     def jump(self):
-        if self.on_ground:
-            self.vel_y = self.jump_strength
-            self.on_ground = False
+        # Só pode pular se ainda não estiver pulando ou caindo
+        if self.state == STILL:
+            self.vel_y = JUMP_SIZE
+            self.state = JUMPING
 
     def attack(self):
         now = pygame.time.get_ticks()
