@@ -5,7 +5,7 @@ SND_DIR = path.join(path.dirname(__file__), 'assets', 'snd')
 FNT_DIR = path.join(path.dirname(__file__), 'assets', 'fnt')
 #dados gerais
 WIDTH = 1000
-HEIGHT = 600
+HEIGHT = 715
 FPS = 60
 GRAVITY = 0.6
 #tamanhos dos sprites
