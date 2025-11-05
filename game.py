@@ -39,7 +39,7 @@ def game_screen(window):
     groups['all_attacks'] = all_attacks
 
 #Zombies
-    player = Player(groups, assets)
+    player = Player(groups, assets, all_blocks)
     zombie1 = Zombie(groups, assets)
     zombie2 = Zombie(groups, assets)
     zombie3 = Zombie(groups, assets)

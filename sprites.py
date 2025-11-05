@@ -34,7 +34,7 @@ class Tile(pygame.sprite.Sprite):
         self.rect.y = row * BLOCK_HEIGHT
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self,groups,assets):
+    def __init__(self,groups,assets, all_blocks):
         pygame.sprite.Sprite.__init__(self)
         self.image = assets[PLAYER_IMG]
         self.mask = pygame.mask.from_surface(self.image)
@@ -50,6 +50,7 @@ class Player(pygame.sprite.Sprite):
         self.groups = groups
         self.assets = assets
         self.direction = 1
+        self.blocks = all_blocks
 
     def update(self):
         self.rect.x += self.speedx*self.direction
@@ -60,6 +61,30 @@ class Player(pygame.sprite.Sprite):
             self.image = self.assets[PLAYER_IMG]
         self.vel_y += GRAVITY
         self.rect.y += self.vel_y
+
+
+        collisions = pygame.sprite.spritecollide(self, self.blocks, False)
+        # Corrige a posição do personagem para antes da colisão
+        for collision in collisions:
+            # Estava indo para baixo
+            if self.speedy > 0:
+                self.rect.bottom = collision.rect.top
+                # Se colidiu com algo, para de cair
+                self.speedy = 0
+                # Atualiza o estado para parado
+                self.state = 0
+            # Estava indo para cima
+            elif self.speedy < 0:
+                self.rect.top = collision.rect.bottom
+                # Se colidiu com algo, para de cair
+                self.speedy = 0
+                # Atualiza o estado para parado
+                self.state = 0
+
+
+
+
+        
         if self.rect.right > WIDTH:
             self.rect.right = WIDTH
         if self.rect.left < 0:
@@ -72,6 +97,20 @@ class Player(pygame.sprite.Sprite):
             self.on_ground = True
         else:
             self.on_ground = False
+
+
+
+        collisions = pygame.sprite.spritecollide(self, self.blocks, False)
+        # Corrige a posição do personagem para antes da colisão
+        for collision in collisions:
+            # Estava indo para a direita
+            if self.speedx > 0:
+                self.rect.right = collision.rect.left
+            # Estava indo para a esquerda
+            elif self.speedx < 0:
+                self.rect.left = collision.rect.right
+
+
 
     def jump(self):
         if self.on_ground:

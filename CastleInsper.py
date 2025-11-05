@@ -1,7 +1,7 @@
 import pygame
 import random
 from config import WIDTH, HEIGHT
-from game_screen import game_screen
+from game import game_screen
 
 pygame.init()
 pygame.mixer.init()
