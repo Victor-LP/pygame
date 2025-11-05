@@ -7,6 +7,7 @@ ZOMBIE_IMG = 'zumbiteste1'
 BAT_IMG = 'morcegoteste1'
 ATTACK_IMG = 'attackteste1'
 BLOCK_IMG = 'blocoteste'
+BACKGROUND_IMG = 'background'
 def load_assets():
     assets = {}
     assets[PLAYER_IMG] = pygame.image.load(os.path.join(IMG_DIR,'playerteste1.png')).convert_alpha()
@@ -19,4 +20,6 @@ def load_assets():
     assets[ATTACK_IMG] = pygame.transform.scale_by(assets[ATTACK_IMG], ATTACK_SCALE)
     assets[BAT_IMG] = pygame.image.load(os.path.join(IMG_DIR,'morcegoteste1.png')).convert_alpha()
     assets[BAT_IMG] = pygame.transform.scale_by(assets[BAT_IMG], BAT_SCALE)
+    assets[BACKGROUND_IMG] = pygame.image.load(os.path.join(IMG_DIR,'background.png')).convert_alpha()
+    assets[BACKGROUND_IMG] = pygame.transform.scale_by(assets[BACKGROUND_IMG], BAT_SCALE)
     return assets

@@ -2,12 +2,17 @@
 
 import pygame
 from config import FPS, WIDTH, HEIGHT, BLACK, YELLOW, RED, GRAY, BLOCK_WIDTH, BLOCK_HEIGHT
-from assets import load_assets, PLAYER_IMG, BLOCK_IMG
+from assets import load_assets, PLAYER_IMG, BLOCK_IMG, BACKGROUND_IMG
 from sprites import Player, Zombie, Bat, Tile, MAP, BLOCK
 
 def game_screen(window):
     clock = pygame.time.Clock()
     assets = load_assets()
+
+    # Carrega o fundo do jogo
+    background = assets[BACKGROUND_IMG]
+    # Redimensiona o fundo
+    background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
     groups = {}
     all_sprites = pygame.sprite.Group()
@@ -96,5 +101,6 @@ def game_screen(window):
             enemy.move_to_player(player, assets)
 
         window.fill(GRAY)
+        window.blit(background,(0,0))
         all_sprites.draw(window)
         pygame.display.flip()
