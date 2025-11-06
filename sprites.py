@@ -1,7 +1,7 @@
 import pygame
 import random
 from config import WIDTH, HEIGHT, EMPTY, GRAVITY, BLOCK, BLOCK_HEIGHT, BLOCK_WIDTH
-from assets import PLAYER_IMG, ZOMBIE_IMG, ATTACK_IMG, BLOCK_IMG, BAT_IMG, SKELETON_IMG
+from assets import PLAYER_IMG, ZOMBIE_IMG, ATTACK_IMG, BLOCK_IMG, BAT_IMG1, BAT_IMG2, BAT_IMG3, SKELETON_IMG
 
 JUMP_SIZE = -20
 
@@ -182,7 +182,7 @@ class Zombie(pygame.sprite.Sprite):
 class Bat(pygame.sprite.Sprite):
     def __init__(self, groups, assets):
         pygame.sprite.Sprite.__init__(self)
-        self.image = assets[BAT_IMG]  # TROCAR PARA MORÇEGO DEPOIS.
+        self.image = assets[BAT_IMG1]
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.mask.get_rect()
 
@@ -206,9 +206,9 @@ class Bat(pygame.sprite.Sprite):
         self.rect.x += self.speed * self.direction
 
         if self.direction == -1:
-            self.image = pygame.transform.flip(self.assets[BAT_IMG], True, False) # TROCAR PARA MORÇEGO DEPOIS.
+            self.image = pygame.transform.flip(self.assets[BAT_IMG2], True, False)
         else:
-            self.image = self.assets[BAT_IMG] # TROCAR PARA MORÇEGO DEPOIS.
+            self.image = self.assets[BAT_IMG3]
 
         if self.rect.right > WIDTH:
             self.rect.right = WIDTH
@@ -242,7 +242,7 @@ class Skeleton(pygame.sprite.Sprite):
         self.run_speed = 4
         self.jump_power = -18
 
-        self.skeleton_aggro = 350
+        self.skeleton_aggro = 150
         self.min_jump_range = 30
         self.jump_cooldown = 1250
         self.last_jump = 0
