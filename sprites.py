@@ -222,6 +222,76 @@ class Bat(pygame.sprite.Sprite):
     def move_to_player(self, player, assets):
         return
 
+class Skeleton(pygame.sprite.Sprite):
+    def __init__(self, groups, assets):
+        pygame.sprite.Sprite.__init__(self)
+        self.assets = assets
+        self.image = assets[BAT_IMG]
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.mask.get_rect()
+        self.rect.centerx = random.randint(0, WIDTH)
+        self.rect.bottom = 100
+        self.speedx = 0
+        self.vel_y = 0
+        self.on_ground = False
+
+        self.groups = groups
+        self.blocks = groups["all_blocks"]
+        self.direction = 1
+
+        self.run_speed = 4
+        self.jump_power = -18
+
+        self.skeleton_aggro = 350
+        self.min_jump_range = 30
+        self.jump_cooldown = 1250
+        self.last_jump = 0
+
+    def update(self):
+        self.rect.x += int(self.speedx)
+        self.vel_y += GRAVITY
+        self.rect.y += int(self.vel_y)
+
+        if self.rect.right > WIDTH:
+            self.rect.right = WIDTH
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.top < 0:
+            self.rect.top = 0
+        if self.rect.bottom > HEIGHT:
+            self.rect.bottom = HEIGHT
+            self.vel_y = 0
+            self.on_ground = True
+            
+        if self.direction == -1:
+            self.image = pygame.transform.flip(self.assets[BAT_IMG], True, False)
+        else:
+            self.image = self.assets[BAT_IMG]
+
+    def move_to_player(self, player, assets):
+        now = pygame.time.get_ticks()
+
+        dx = player.rect.centerx - self.rect.centerx
+        adx = abs(dx)
+
+        can_pounce = (
+            self.on_ground
+            and (self.min_jump_range < adx <= self.skeleton_aggro)
+            and (now - self.last_jump >= self.jump_cooldown)
+        )
+
+        if can_pounce:
+            if dx > 0:
+                self.direction = 1
+            else:
+                self.direction = -1
+            self.speedx = self.run_speed * self.direction
+            self.vel_y = self.jump_power
+            self.last_jump = now
+        else:
+            if self.on_ground and abs(self.speedx) < 0.4:
+                self.speedx = 0
+
 
 class Attack(pygame.sprite.Sprite):
     def __init__(self, assets, x, y, direction):

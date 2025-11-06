@@ -3,7 +3,7 @@
 import pygame
 from config import FPS, WIDTH, HEIGHT, BLACK, YELLOW, RED, GRAY, BLOCK_WIDTH, BLOCK_HEIGHT
 from assets import load_assets, PLAYER_IMG, BLOCK_IMG, BACKGROUND_IMG
-from sprites import Player, Zombie, Bat, Tile, MAP, BLOCK
+from sprites import Player, Zombie, Bat, Skeleton, Tile, MAP, BLOCK
 
 def game_screen(window):
     clock = pygame.time.Clock()
@@ -55,7 +55,11 @@ def game_screen(window):
     bat2 = Bat(groups, assets)
     all_sprites.add(bat1, bat2)
     all_enemies.add(bat1, bat2)
-
+#Skeleton
+    skeleton1 = Skeleton(groups, assets)
+    skeleton2 = Skeleton(groups, assets)
+    all_sprites.add(skeleton1, skeleton2)
+    all_enemies.add(skeleton1, skeleton2)
     running = True
     keys_down = {}
     pygame.key.set_repeat(1, 10)
