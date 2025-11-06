@@ -1,5 +1,5 @@
 import pygame
-import random
+import random 
 from config import WIDTH, HEIGHT
 from game import game_screen
 
