@@ -1,7 +1,7 @@
 import pygame
 import random
 from config import WIDTH, HEIGHT, EMPTY, GRAVITY, BLOCK, BLOCK_HEIGHT, BLOCK_WIDTH
-from assets import PLAYER_IMG, ZOMBIE_IMG, ATTACK_IMG, BLOCK_IMG, BAT_IMG
+from assets import PLAYER_IMG, ZOMBIE_IMG, ATTACK_IMG, BLOCK_IMG, BAT_IMG, SKELETON_IMG
 
 JUMP_SIZE = -20
 
@@ -226,7 +226,7 @@ class Skeleton(pygame.sprite.Sprite):
     def __init__(self, groups, assets):
         pygame.sprite.Sprite.__init__(self)
         self.assets = assets
-        self.image = assets[BAT_IMG]
+        self.image = assets[SKELETON_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.mask.get_rect()
         self.rect.centerx = random.randint(0, WIDTH)
@@ -264,9 +264,9 @@ class Skeleton(pygame.sprite.Sprite):
             self.on_ground = True
             
         if self.direction == -1:
-            self.image = pygame.transform.flip(self.assets[BAT_IMG], True, False)
+            self.image = pygame.transform.flip(self.assets[SKELETON_IMG], True, False)
         else:
-            self.image = self.assets[BAT_IMG]
+            self.image = self.assets[SKELETON_IMG]
 
     def move_to_player(self, player, assets):
         now = pygame.time.get_ticks()
