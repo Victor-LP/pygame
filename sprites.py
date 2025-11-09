@@ -48,7 +48,9 @@ class PhysicsEntity(pygame.sprite.Sprite):
                 if self.speedy > 0:  # Caindo
                     self.rect.bottom = collision.rect.top
                     self.speedy = 0
-                    self.state = STILL
+                    # só marca STILL se NÃO estivermos atacando, para não atrapalhar a animação
+                    if self.state != ATTACKING:
+                        self.state = STILL
                     self.on_ground = True
                 elif self.speedy < 0:  # Subindo
                     self.rect.top = collision.rect.bottom
@@ -70,41 +72,59 @@ class Player(PhysicsEntity):
         self.rect.bottom = HEIGHT * 10
         self.speedx = 5
         self.looking = 1  # 1 = direita, -1 = esquerda
-        self.last_attack = 0
-        self.attack_ticks = 300
+
+        # Controle de ataque
+        self.last_attack = 0            # tempo do último ataque (cooldown)
+        self.attack_cooldown = 500     # ms entre ataques (cooldown)
+        self.attack_timer = 0          # tempo em que começou o ataque atual
+        self.attack_duration = 200     # ms que a animação de ataque permanece (duracao visual)
 
     def update(self):
-        # Atualiza o estado do jogador
+        # Atualiza física
         self.apply_physics()
-        
-        # Atualiza direção da imagem
+
+        now = pygame.time.get_ticks()
+
+        # Se estiver em ATTACKING, verifique se a duração do ataque acabou
         if self.state == ATTACKING:
-            now = pygame.time.get_ticks()
-            if now - self.attack_timer > 700:  # 300 ms = 0.3 s de duração
-                self.state = STILL  # volta ao normal
-                self.image_key = PLAYER_IMG
+            if now - self.attack_timer >= self.attack_duration:
+                self.state = STILL  # volta ao normal quando o timer expirar
+
+        # --- Escolha de imagem com prioridade: ATTACKING > JUMPING/FALLING > STILL ---
+        if self.state == ATTACKING:
+            img = self.assets[PLAYER_ATTACK_IMG]
+        elif not self.on_ground:
+            img = self.assets[PLAYER_JUMP_IMG]
+        else:
+            img = self.assets[PLAYER_IMG]
+
+        # aplica flip conforme direção olhando
         if self.looking == -1:
-            self.image = pygame.transform.flip(self.assets[self.image_key], True, False)
-        else:
-            self.image = self.assets[self.image_key]
-        if not self.on_ground and self.state != ATTACKING:
-            self.image_key = PLAYER_JUMP_IMG
-        else:
-            self.image_key = PLAYER_IMG
+            img = pygame.transform.flip(img, True, False)
+
+        # atribui imagem e máscara atualizadas
+        self.image = img
+        self.mask = pygame.mask.from_surface(self.image)
+
+
     def attack(self):
-        if self.state != ATTACKING:
+        now = pygame.time.get_ticks()
+        # só inicia um novo ataque se não estiver em cooldown
+        if now - self.last_attack >= self.attack_cooldown:
             self.state = ATTACKING
-            self.image_key = PLAYER_ATTACK_IMG
-            self.attack_timer = pygame.time.get_ticks()
-            elapsed_ticks = self.attack_timer - self.last_attack
-            if elapsed_ticks > self.attack_ticks:
-                self.last_attack = self.attack_timer
-                if self.looking == 1:
-                    new_attack = Attack(self.assets, self.rect.centerx, self.rect.y, 1)
-                else:
-                    new_attack = Attack(self.assets, self.rect.x, self.rect.y, -1)
-                self.groups['all_sprites'].add(new_attack)
-                self.groups['all_attacks'].add(new_attack)
+            self.attack_timer = now
+            self.last_attack = now
+
+            # cria o sprite de ataque (ajuste spawn x/y para posicionar corretamente)
+            if self.looking == 1:
+                spawn_x = self.rect.centerx + 10
+            else:
+                spawn_x = self.rect.left - 10
+            spawn_y = self.rect.centery
+
+            new_attack = Attack(self.assets, spawn_x, spawn_y, self.looking)
+            self.groups['all_sprites'].add(new_attack)
+            self.groups['all_attacks'].add(new_attack)
 
 # ========== CLASSE DOS INIMIGOS TERRESTRES ==========
 class GroundEnemy(PhysicsEntity):
@@ -190,18 +210,19 @@ class Attack(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(assets['attack'], True, False)
         else:
             self.image = assets['attack']
-        
+
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.speedx = 15 * looking
         self.spawn_time = pygame.time.get_ticks()
-        self.duration = 100  # Duração em milissegundos
+        self.duration = 300  # Duração em milissegundos (quanto tempo o sprite de ataque fica ativo)
 
     def update(self):
-        # Atualiza o movimento e verifica duração do ataque
+        # movimento
         self.rect.x += self.speedx
+        # duração
         elapsed = pygame.time.get_ticks() - self.spawn_time
         if elapsed > self.duration:
             self.kill()
