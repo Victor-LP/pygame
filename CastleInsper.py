@@ -4,8 +4,8 @@ from game import game_screen
 
 pygame.init()
 pygame.mixer.init()
-pygame.display.set_caption('Casatle Insper')
+pygame.display.set_caption('Castle Insper')
 
 game_screen(window)
 
-pygame.quit() 
+pygame.quit()

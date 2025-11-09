@@ -15,13 +15,13 @@ class Tile(pygame.sprite.Sprite):
 
 class Player(pygame.sprite.Sprite):
     def __init__(self,groups,assets, all_blocks):
-        self.state = STILL
+        #método construtor
         pygame.sprite.Sprite.__init__(self)
         self.image = assets[PLAYER_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.mask.get_rect()
-        self.rect.centerx = WIDTH / 2
-        self.rect.bottom = HEIGHT - 10
+        self.rect.centerx = 0
+        self.rect.bottom = HEIGHT*10
         self.speedx = 5
         self.speedy = 0
         self.last_attack = 0
@@ -31,6 +31,7 @@ class Player(pygame.sprite.Sprite):
         self.direction = 0
         self.looking = 0
         self.blocks = all_blocks
+        self.state = STILL
 
     def update(self):
         self.rect.x += self.speedx*self.direction
@@ -188,13 +189,14 @@ class Skeleton(pygame.sprite.Sprite):
         self.rect = self.mask.get_rect()
         self.rect.centerx = random.randint(0, WIDTH)
         self.rect.bottom = 100
-        self.speedx = 0
+        self.speedx = 10
         self.speedy = 0
         self.on_ground = False
 
         self.groups = groups
         self.blocks = groups["all_blocks"]
-        self.direction = 1
+        self.direction = 0
+        self.looking = 1
 
         self.run_speed = 4
         self.jump_power = -18
@@ -205,19 +207,8 @@ class Skeleton(pygame.sprite.Sprite):
         self.last_jump = 0
 
     def update(self):
-        self.rect.x += self.speedx
-        self.speedy += GRAVITY
-        self.rect.y += self.speedy
-        if self.rect.right > WIDTH:
-            self.rect.right = WIDTH
-        if self.rect.left < 0:
-            self.rect.left = 0
-        if self.rect.top < 0:
-            self.rect.top = 0
-        if self.rect.bottom > HEIGHT:
-            self.rect.bottom = HEIGHT
-            self.speedy = 0
-            self.on_ground = True
+        self.rect.x += self.speedx * self.direction
+        
             
         if self.direction == -1:
             self.image = pygame.transform.flip(self.assets[SKELETON_IMG], True, False)

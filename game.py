@@ -44,7 +44,7 @@ def game_screen(window):
     all_players.add(player)
 #Zombies
     zombie1 = Zombie(groups, assets, all_blocks)
-    zombie2 = Zombie(groups, assets, all_attacks)
+    zombie2 = Zombie(groups, assets, all_blocks)
     zombie3 = Zombie(groups, assets, all_blocks)
 
     all_sprites.add(player, zombie1, zombie2, zombie3)
