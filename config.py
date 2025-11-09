@@ -44,7 +44,7 @@ QUIT = 2
 STILL = 0
 JUMPING = 1
 FALLING = 2
-
+ATTACKING = 3
 # ========== TIPOS DE TILE ==========
 BLOCK = 1
 EMPTY = -1

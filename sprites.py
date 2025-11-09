@@ -1,6 +1,7 @@
 import pygame
 import random
-from config import WIDTH, HEIGHT, GRAVITY, BLOCK_HEIGHT, BLOCK_WIDTH, JUMP_SIZE, STILL, JUMPING, FALLING
+from config import WIDTH, HEIGHT, GRAVITY, BLOCK_HEIGHT, BLOCK_WIDTH, JUMP_SIZE, STILL, JUMPING, FALLING, ATTACKING
+from assets import PLAYER_JUMP_IMG,PLAYER_ATTACK_IMG,PLAYER_IMG
 
 # ========== CLASSE MÃE PARA ENTIDADES COM FÍSICA ==========
 class PhysicsEntity(pygame.sprite.Sprite):
@@ -77,25 +78,33 @@ class Player(PhysicsEntity):
         self.apply_physics()
         
         # Atualiza direção da imagem
+        if self.state == ATTACKING:
+            now = pygame.time.get_ticks()
+            if now - self.attack_timer > 700:  # 300 ms = 0.3 s de duração
+                self.state = STILL  # volta ao normal
+                self.image_key = PLAYER_IMG
         if self.looking == -1:
             self.image = pygame.transform.flip(self.assets[self.image_key], True, False)
         else:
             self.image = self.assets[self.image_key]
-
+        if not self.on_ground and self.state != ATTACKING:
+            self.image_key = PLAYER_JUMP_IMG
+        else:
+            self.image_key = PLAYER_IMG
     def attack(self):
-        # Executa um ataque
-        now = pygame.time.get_ticks()
-        elapsed_ticks = now - self.last_attack
-
-        if elapsed_ticks > self.attack_ticks:
-            self.last_attack = now
-            if self.looking == 1:
-                new_attack = Attack(self.assets, self.rect.centerx, self.rect.y, 1)
-            else:
-                new_attack = Attack(self.assets, self.rect.x, self.rect.y, -1)
-            
-            self.groups['all_sprites'].add(new_attack)
-            self.groups['all_attacks'].add(new_attack)
+        if self.state != ATTACKING:
+            self.state = ATTACKING
+            self.image_key = PLAYER_ATTACK_IMG
+            self.attack_timer = pygame.time.get_ticks()
+            elapsed_ticks = self.attack_timer - self.last_attack
+            if elapsed_ticks > self.attack_ticks:
+                self.last_attack = self.attack_timer
+                if self.looking == 1:
+                    new_attack = Attack(self.assets, self.rect.centerx, self.rect.y, 1)
+                else:
+                    new_attack = Attack(self.assets, self.rect.x, self.rect.y, -1)
+                self.groups['all_sprites'].add(new_attack)
+                self.groups['all_attacks'].add(new_attack)
 
 # ========== CLASSE DOS INIMIGOS TERRESTRES ==========
 class GroundEnemy(PhysicsEntity):

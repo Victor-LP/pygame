@@ -1,7 +1,6 @@
 import pygame
 from config import window
 from game import game_screen
-
 def main():
     #Função principal do jogo
     pygame.init()
