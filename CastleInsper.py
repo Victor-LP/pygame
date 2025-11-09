@@ -1,11 +1,15 @@
 import pygame
-from config import WIDTH, HEIGHT, window
+from config import window
 from game import game_screen
 
-pygame.init()
-pygame.mixer.init()
-pygame.display.set_caption('Castle Insper')
+def main():
+    #Função principal do jogo
+    pygame.init()
+    pygame.mixer.init()
+    pygame.display.set_caption('Castle Insper')
+    
+    game_screen(window)
+    pygame.quit()
 
-game_screen(window)
-
-pygame.quit()
+if __name__ == '__main__':
+    main()

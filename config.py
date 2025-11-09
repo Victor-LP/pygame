@@ -1,16 +1,23 @@
-from os import path
 import pygame
-#assets path
+from os import path
+
+# ========== DIRETÓRIOS DE ASSETS ==========
 IMG_DIR = path.join(path.dirname(__file__), 'assets', 'img')
 SND_DIR = path.join(path.dirname(__file__), 'assets', 'snd')
 FNT_DIR = path.join(path.dirname(__file__), 'assets', 'fnt')
-#dados gerais
+
+# ========== CONFIGURAÇÕES DE JANELA ==========
+pygame.init()
 window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 info = pygame.display.Info()
 WIDTH, HEIGHT = info.current_w, info.current_h
 FPS = 60
+
+# ========== CONFIGURAÇÕES DE FÍSICA ==========
 GRAVITY = 0.6
-#tamanhos dos sprites
+JUMP_SIZE = -20
+
+# ========== CONFIGURAÇÕES DE SPRITES ==========
 PLAYER_SCALE = 4
 ZOMBIE_SCALE = 4
 SKELETON_SCALE = 4
@@ -19,7 +26,7 @@ ATTACK_SCALE = 4
 BLOCK_WIDTH = WIDTH // 17.5
 BLOCK_HEIGHT = HEIGHT // 9.72
 
-#cores
+# ========== CORES ==========
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -27,17 +34,22 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 GRAY = (100, 100, 100)
-#estados de jogo
+
+# ========== ESTADOS DO JOGO ==========
 INIT = 0
 GAME = 1
 QUIT = 2
-BLOCK = 1
-EMPTY = -1
-JUMP_SIZE = -20
+
+# ========== ESTADOS DO PERSONAGEM ==========
 STILL = 0
 JUMPING = 1
 FALLING = 2
 
+# ========== TIPOS DE TILE ==========
+BLOCK = 1
+EMPTY = -1
+
+# ========== GERAÇÃO DO MAPA ==========
 MAP = []
 height = 200
 width = 18
@@ -45,11 +57,10 @@ width = 18
 for y in range(height):
     row = [EMPTY] * width
     
-    # Plataformas principais estreitas com buracos variados
+    # Plataformas principais
     if y % 6 == 0 and y < height - 6:
         level = y // 6
         
-        # Padrões diferentes de buracos
         if level % 5 == 0:
             # Buracos no meio
             for x in range(4, width - 4):
@@ -85,7 +96,6 @@ for y in range(height):
     # Plataformas de apoio
     elif (y - 3) % 6 == 0 and y < height - 3:
         level = y // 6
-        # Plataformas pequenas estratégicas
         if level % 3 == 0:
             row[6] = BLOCK
             row[7] = BLOCK
