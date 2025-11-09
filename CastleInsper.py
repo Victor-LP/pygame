@@ -1,14 +1,11 @@
 import pygame
-import random 
-from config import WIDTH, HEIGHT
+from config import WIDTH, HEIGHT, window
 from game import game_screen
 
 pygame.init()
 pygame.mixer.init()
-
-window = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption('Castle Insper')
+pygame.display.set_caption('Casatle Insper')
 
 game_screen(window)
 
-pygame.quit()
+pygame.quit() 

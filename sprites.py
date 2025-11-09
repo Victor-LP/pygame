@@ -1,36 +1,9 @@
 import pygame
 import random
-from config import WIDTH, HEIGHT, EMPTY, GRAVITY, BLOCK, BLOCK_HEIGHT, BLOCK_WIDTH
+from config import WIDTH, HEIGHT, GRAVITY, BLOCK_HEIGHT, BLOCK_WIDTH, JUMP_SIZE,JUMPING,STILL,FALLING
 from assets import PLAYER_IMG, ZOMBIE_IMG, ATTACK_IMG, BLOCK_IMG, BAT_IMG1, BAT_IMG2, BAT_IMG3, SKELETON_IMG
 
-JUMP_SIZE = -16
-
-MAP = [
-    [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-    [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-    [EMPTY, EMPTY, EMPTY, EMPTY, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-    [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLOCK, EMPTY, EMPTY],
-    [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLOCK, BLOCK],
-    [BLOCK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-    [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-    [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-    [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-    [EMPTY, EMPTY, BLOCK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-    [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-    [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLOCK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLOCK, BLOCK],
-    [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, BLOCK, BLOCK, BLOCK, EMPTY, EMPTY, EMPTY, BLOCK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-    [EMPTY, EMPTY, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, EMPTY, EMPTY, BLOCK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
-    [EMPTY, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, EMPTY, EMPTY, EMPTY],
-    [EMPTY, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, BLOCK, EMPTY, EMPTY, EMPTY],
-]
-
-STILL = 0
-JUMPING = 1
-FALLING = 2
-
 class Tile(pygame.sprite.Sprite):
-
-    # Construtor da classe.
     def __init__(self, groups, assets, row, column):
         pygame.sprite.Sprite.__init__(self)
         self.image = assets[BLOCK_IMG]
@@ -49,79 +22,49 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.mask.get_rect()
         self.rect.centerx = WIDTH / 2
         self.rect.bottom = HEIGHT - 10
-        self.speedx = 0
+        self.speedx = 5
         self.speedy = 0
-        self.jump_strength = -20
-        self.vel_y = 0
         self.last_attack = 0
-        self.attack_ticks = 300  # Tempo mínimo entre ataques em milissegundos
+        self.attack_ticks = 300
         self.groups = groups
         self.assets = assets
-        self.direction = 1
+        self.direction = 0
+        self.looking = 0
         self.blocks = all_blocks
 
     def update(self):
-        # Movimento horizontal
         self.rect.x += self.speedx*self.direction
-        
-        if self.direction == -1:
+        if self.looking == -1:
             self.image = pygame.transform.flip(self.assets[PLAYER_IMG], True, False)
         else:
             self.image = self.assets[PLAYER_IMG]
-
-        #colisões horizontais
         collisions = pygame.sprite.spritecollide(self, self.blocks, False)
-        # Corrige a posição do personagem para antes da colisão
         for collision in collisions:
             move_x = self.speedx * self.direction
-            if move_x > 0:  # Indo para a direita
+            if move_x > 0:
                 self.rect.right = collision.rect.left
-            elif move_x < 0:  # Indo para a esquerda
+            elif move_x < 0:
                 self.rect.left = collision.rect.right
-            self.speedx = 0
-
-
-        self.vel_y += GRAVITY
-        self.rect.y += self.vel_y
-
-        #colisões verticais
+        self.speedy += GRAVITY
+        self.rect.y += self.speedy
         collisions = pygame.sprite.spritecollide(self, self.blocks, False)
         self.on_ground = False
-        # Corrige a posição do personagem para antes da colisão
         collisions = pygame.sprite.spritecollide(self, self.blocks, False)
         self.on_ground = False
         for collision in collisions:
-            if self.vel_y > 0:  # Caindo
+            if self.speedy > 0: 
                 self.rect.bottom = collision.rect.top
-                self.vel_y = 0
+                self.speedy = 0
                 self.state = STILL
                 self.on_ground = True
-            elif self.vel_y < 0:  # Bateu a cabeça
+            elif self.speedy < 0:
                 self.rect.top = collision.rect.bottom + 1
-                self.vel_y = 0
-                self.state = FALLING  # deixa cair
-
-
-        #limites da tela
-        if self.rect.right > WIDTH:
-            self.rect.right = WIDTH
-        if self.rect.left < 0:
-            self.rect.left = 0
-        if self.rect.top < 0:
-            self.rect.top = 0
-        
-        #checa se está no chão    
-        if self.rect.bottom >= HEIGHT:
-            self.rect.bottom = HEIGHT
-            self.vel_y = 0
-            self.on_ground = True
-            self.state = STILL
-
-
+                self.speedy = 0
+                self.state = FALLING
 
     def jump(self):
         if self.on_ground:
-            self.vel_y = JUMP_SIZE
+            self.speedy = JUMP_SIZE
             self.state = JUMPING
             self.on_ground = False
 
@@ -133,7 +76,7 @@ class Player(pygame.sprite.Sprite):
         if elapsed_ticks > self.attack_ticks:
             # Marca o tick da nova imagem.
             self.last_attack = now
-            if self.direction==1:
+            if self.looking==1:
                 new_attack = Attack(self.assets, self.rect.centerx, self.rect.y, 1)
             else:
                 new_attack = Attack(self.assets, self.rect.x, self.rect.y, -1)
@@ -141,33 +84,48 @@ class Player(pygame.sprite.Sprite):
             self.groups['all_attacks'].add(new_attack)
 
 class Zombie(pygame.sprite.Sprite):
-    def __init__(self,groups,assets):
+    def __init__(self,groups,assets,all_blocks):
         pygame.sprite.Sprite.__init__(self)
         self.image = assets[ZOMBIE_IMG]
+        self.assets = assets
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.mask.get_rect()
         self.rect.centerx = random.randint(0, WIDTH)
         self.rect.bottom = 100
         self.speedx = 0
         self.speedy = 0
-        self.vel_y = 0
+        self.blocks = all_blocks
+        self.direction = 1
     def update(self):
-        self.rect.x += self.speedx
-        self.rect.y += self.speedy
-        self.vel_y += GRAVITY
-        self.rect.y += self.vel_y
-        if self.rect.right > WIDTH:
-            self.rect.right = WIDTH
-        if self.rect.left < 0:
-            self.rect.left = 0
-        if self.rect.top < 0:
-            self.rect.top = 0
-        if self.rect.bottom > HEIGHT:
-            self.rect.bottom = HEIGHT
-        if self.rect.bottom >= HEIGHT:
-            self.on_ground = True
+        self.rect.x += self.speedx*self.direction
+        if self.direction == -1:
+            self.image = pygame.transform.flip(self.assets[PLAYER_IMG], True, False)
         else:
-            self.on_ground = False
+            self.image = self.assets[ZOMBIE_IMG]
+        collisions = pygame.sprite.spritecollide(self, self.blocks, False)
+        for collision in collisions:
+            move_x = self.speedx * self.direction
+            if move_x > 0:
+                self.rect.right = collision.rect.left
+            elif move_x < 0:
+                self.rect.left = collision.rect.right
+        self.speedy += GRAVITY
+        self.rect.y += self.speedy
+        collisions = pygame.sprite.spritecollide(self, self.blocks, False)
+        self.on_ground = False
+        collisions = pygame.sprite.spritecollide(self, self.blocks, False)
+        self.on_ground = False
+        for collision in collisions:
+            if self.speedy > 0: 
+                self.rect.bottom = collision.rect.top
+                self.speedy = 0
+                self.state = STILL
+                self.on_ground = True
+            elif self.speedy < 0:
+                self.rect.top = collision.rect.bottom + 1
+                self.speedy = 0
+                self.state = FALLING
+        
     def move_to_player(self, player,assets):
         if self.rect.x < player.rect.x and player.rect.y <= self.rect.y:
             self.speedx = 2
@@ -231,7 +189,7 @@ class Skeleton(pygame.sprite.Sprite):
         self.rect.centerx = random.randint(0, WIDTH)
         self.rect.bottom = 100
         self.speedx = 0
-        self.vel_y = 0
+        self.speedy = 0
         self.on_ground = False
 
         self.groups = groups
@@ -247,10 +205,9 @@ class Skeleton(pygame.sprite.Sprite):
         self.last_jump = 0
 
     def update(self):
-        self.rect.x += int(self.speedx)
-        self.vel_y += GRAVITY
-        self.rect.y += int(self.vel_y)
-
+        self.rect.x += self.speedx
+        self.speedy += GRAVITY
+        self.rect.y += self.speedy
         if self.rect.right > WIDTH:
             self.rect.right = WIDTH
         if self.rect.left < 0:
@@ -259,7 +216,7 @@ class Skeleton(pygame.sprite.Sprite):
             self.rect.top = 0
         if self.rect.bottom > HEIGHT:
             self.rect.bottom = HEIGHT
-            self.vel_y = 0
+            self.speedy = 0
             self.on_ground = True
             
         if self.direction == -1:
@@ -285,7 +242,7 @@ class Skeleton(pygame.sprite.Sprite):
             else:
                 self.direction = -1
             self.speedx = self.run_speed * self.direction
-            self.vel_y = self.jump_power
+            self.speedy = self.jump_power
             self.last_jump = now
         else:
             if self.on_ground and abs(self.speedx) < 0.4:
@@ -293,9 +250,9 @@ class Skeleton(pygame.sprite.Sprite):
 
 
 class Attack(pygame.sprite.Sprite):
-    def __init__(self, assets, x, y, direction):
+    def __init__(self, assets, x, y, looking):
         pygame.sprite.Sprite.__init__(self)
-        if direction == -1:
+        if looking == -1:
             self.image = pygame.transform.flip(assets[ATTACK_IMG], True, False)
         else:
             self.image = assets[ATTACK_IMG]
@@ -303,7 +260,7 @@ class Attack(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.speedx = 10*direction
+        self.speedx = 10*looking
         spawn_time = pygame.time.get_ticks()
         self.spawn_time = spawn_time
         self.duration = 100  # Duração em milissegundos

@@ -30,5 +30,4 @@ def load_assets():
     assets[BAT_IMG3] = pygame.image.load(os.path.join(IMG_DIR,'morcegoteste3.png')).convert_alpha()
     assets[BAT_IMG3] = pygame.transform.scale_by(assets[BAT_IMG3], BAT_SCALE)
     assets[BACKGROUND_IMG] = pygame.image.load(os.path.join(IMG_DIR,'background.png')).convert_alpha()
-    assets[BACKGROUND_IMG] = pygame.transform.scale_by(assets[BACKGROUND_IMG], BAT_SCALE)
     return assets
