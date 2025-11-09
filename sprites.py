@@ -2,7 +2,7 @@ import pygame
 import random
 from config import WIDTH, HEIGHT, GRAVITY, BLOCK_HEIGHT, BLOCK_WIDTH, JUMP_SIZE, STILL, JUMPING, FALLING
 
-# ========== CLASSE BASE PARA ENTIDADES COM FÍSICA ==========
+# ========== CLASSE MÃE PARA ENTIDADES COM FÍSICA ==========
 class PhysicsEntity(pygame.sprite.Sprite):
     def __init__(self, groups, assets, image_key, all_blocks=None):
         super().__init__()
