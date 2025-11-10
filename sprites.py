@@ -72,12 +72,19 @@ class Player(PhysicsEntity):
         self.rect.bottom = HEIGHT * 10
         self.speedx = 5
         self.looking = 1  # 1 = direita, -1 = esquerda
+        self.hp = 10
 
         # Controle de ataque
         self.last_attack = 0            # tempo do último ataque (cooldown)
         self.attack_cooldown = 500     # ms entre ataques (cooldown)
         self.attack_timer = 0          # tempo em que começou o ataque atual
         self.attack_duration = 200     # ms que a animação de ataque permanece (duracao visual)
+
+        # Controle hit
+        self.last_hit = 0 
+        self.hit_cooldown = 500     # ms entre ataques (cooldown)
+        self.hit_timer = 0          # tempo em que começou o ataque atual
+        # self.hit_duration = 200     # ms que a animação de ataque permanece (duracao visual)
 
         # pega os frames diretamente do dict de assets
         self.walk_frames = [self.assets[PLAYER_WALK3_IMG], self.assets[PLAYER_WALK1_IMG], self.assets[PLAYER_IMG]]
@@ -143,6 +150,19 @@ class Player(PhysicsEntity):
             new_attack = Attack(self.assets, spawn_x, spawn_y, self.looking)
             self.groups['all_sprites'].add(new_attack)
             self.groups['all_attacks'].add(new_attack)
+
+    def hit(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_hit >= self.hit_cooldown:
+            #self.somespada.play()
+            #self.state = ATTACKING
+            self.hit_timer = now
+            self.last_hit = now
+            self.hp -=1
+            if self.hp <= 0:
+                return False
+        return True
+
 
 # ========== CLASSE DOS INIMIGOS TERRESTRES ==========
 class GroundEnemy(PhysicsEntity):

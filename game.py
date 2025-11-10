@@ -115,6 +115,11 @@ def game_screen(window):
         
         # Detecção de colisões
         pygame.sprite.groupcollide(all_enemies, all_attacks, True, True, pygame.sprite.collide_mask)
+        hits = pygame.sprite.groupcollide(all_enemies, all_players, False, False, pygame.sprite.collide_mask)
+        if hits:
+            player_alive = player.hit()
+        if not player_alive:
+            running = False
 
         # ========== RENDERIZAÇÃO ==========
         window.fill(GRAY)
@@ -125,5 +130,7 @@ def game_screen(window):
         
         for sprite in all_sprites:
             window.blit(sprite.image, (sprite.rect.x, sprite.rect.y + camera_y))
-        
+        font = pygame.font.Font(None, 36)
+        hp_text = font.render(f"HP: {player.hp}", True, (255, 0, 0))
+        window.blit(hp_text, (10, 10))
         pygame.display.flip()
