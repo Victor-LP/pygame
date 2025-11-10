@@ -80,7 +80,7 @@ class Player(PhysicsEntity):
         self.attack_duration = 200     # ms que a animação de ataque permanece (duracao visual)
 
         # pega os frames diretamente do dict de assets
-        self.walk_frames = [self.assets[PLAYER_WALK1_IMG], self.assets[PLAYER_WALK2_IMG], self.assets[PLAYER_WALK3_IMG], self.assets[PLAYER_WALK2_IMG]]
+        self.walk_frames = [self.assets[PLAYER_WALK3_IMG], self.assets[PLAYER_WALK1_IMG], self.assets[PLAYER_IMG]]
         self.walk_index = 0
         self.last_walk_time = 0
         self.walk_interval = WALK_ANIM_INTERVAL
