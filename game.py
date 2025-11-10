@@ -1,6 +1,7 @@
 import pygame
 from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK
 from assets import load_assets
+from sprites import Tile, Player, Zombie, Bat, Ghost
 
 def game_screen(window):
     # ========== INICIALIZAÇÃO ==========
@@ -24,7 +25,6 @@ def game_screen(window):
     }
     
     # ========== CARREGAMENTO DO MAPA ==========
-    from sprites import Tile, Player, Zombie, Bat, Skeleton
     
     map_cols = len(MAP[0])
     map_rows = len(MAP)
@@ -60,13 +60,13 @@ def game_screen(window):
         Bat(groups, assets)
     ]
     
-    skeletons = [
-        Skeleton(groups, assets, all_blocks),
-        Skeleton(groups, assets, all_blocks)
+    ghosts = [
+        Ghost(groups, assets, all_blocks),
+        Ghost(groups, assets, all_blocks)
     ]
     
     # Adiciona todos os inimigos aos grupos
-    for enemy in zombies + bats + skeletons:
+    for enemy in zombies + bats + ghosts:
         all_sprites.add(enemy)
         all_enemies.add(enemy)
 

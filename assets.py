@@ -1,16 +1,19 @@
 import pygame
 import os
-from config import IMG_DIR, PLAYER_SCALE, ZOMBIE_SCALE, BAT_SCALE, SKELETON_SCALE, ATTACK_SCALE, BLOCK_HEIGHT, BLOCK_WIDTH
+from config import IMG_DIR, PLAYER_SCALE, ZOMBIE_SCALE, BAT_SCALE, GHOST_SCALE, ATTACK_SCALE, BLOCK_HEIGHT, BLOCK_WIDTH
 
 # ========== CONSTANTES DE IMAGENS ==========
 PLAYER_IMG = 'player'
 PLAYER_JUMP_IMG = 'player_jump'
 PLAYER_ATTACK_IMG = 'player_attack'
+PLAYER_WALK1_IMG = 'player_walk1'
+PLAYER_WALK2_IMG = 'player_walk2'
+PLAYER_WALK3_IMG = 'player_walk3'
 ZOMBIE_IMG = 'zombie'
 BAT_IMG1 = 'bat1'
 BAT_IMG2 = 'bat2'
 BAT_IMG3 = 'bat3'
-SKELETON_IMG = 'skeleton'
+GHOST_IMG = 'ghost'
 ATTACK_IMG = 'attack'
 BLOCK_IMG = 'block'
 BACKGROUND_IMG = 'background'
@@ -27,13 +30,19 @@ def load_assets():
     assets[PLAYER_JUMP_IMG] = pygame.transform.scale_by(assets[PLAYER_JUMP_IMG], PLAYER_SCALE)
     assets[PLAYER_ATTACK_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'playerattack.png')).convert_alpha()
     assets[PLAYER_ATTACK_IMG] = pygame.transform.scale_by(assets[PLAYER_ATTACK_IMG], PLAYER_SCALE)
+    assets[PLAYER_WALK1_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'playerwalk1.png'))
+    assets[PLAYER_WALK1_IMG] = pygame.transform.scale_by(assets[PLAYER_WALK1_IMG], PLAYER_SCALE)
+    assets[PLAYER_WALK2_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'playerwalk2.png'))
+    assets[PLAYER_WALK2_IMG] = pygame.transform.scale_by(assets[PLAYER_WALK2_IMG], PLAYER_SCALE)
+    assets[PLAYER_WALK3_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'playerwalk3.png'))
+    assets[PLAYER_WALK3_IMG] = pygame.transform.scale_by(assets[PLAYER_WALK3_IMG], PLAYER_SCALE)
     
     # Inimigos
     assets[ZOMBIE_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'zumbiteste1.png')).convert_alpha()
     assets[ZOMBIE_IMG] = pygame.transform.scale_by(assets[ZOMBIE_IMG], ZOMBIE_SCALE)
     
-    assets[SKELETON_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'esqueletoteste1.png')).convert_alpha()
-    assets[SKELETON_IMG] = pygame.transform.scale_by(assets[SKELETON_IMG], SKELETON_SCALE)
+    assets[GHOST_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'ghost.png')).convert_alpha()
+    assets[GHOST_IMG] = pygame.transform.scale_by(assets[GHOST_IMG], GHOST_SCALE)
     
     # Morcegos (animação)
     assets[BAT_IMG1] = pygame.image.load(os.path.join(IMG_DIR, 'morcegoteste1.png')).convert_alpha()

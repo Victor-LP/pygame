@@ -1,7 +1,7 @@
 import pygame
 import random
-from config import WIDTH, HEIGHT, GRAVITY, BLOCK_HEIGHT, BLOCK_WIDTH, JUMP_SIZE, STILL, JUMPING, FALLING, ATTACKING
-from assets import PLAYER_JUMP_IMG,PLAYER_ATTACK_IMG,PLAYER_IMG
+from config import WIDTH, HEIGHT, GRAVITY, BLOCK_HEIGHT, BLOCK_WIDTH, JUMP_SIZE, STILL, JUMPING, FALLING, ATTACKING, WALK_ANIM_INTERVAL
+from assets import PLAYER_JUMP_IMG,PLAYER_ATTACK_IMG,PLAYER_IMG,PLAYER_WALK1_IMG,PLAYER_WALK2_IMG,PLAYER_WALK3_IMG
 
 # ========== CLASSE MÃE PARA ENTIDADES COM FÍSICA ==========
 class PhysicsEntity(pygame.sprite.Sprite):
@@ -79,6 +79,12 @@ class Player(PhysicsEntity):
         self.attack_timer = 0          # tempo em que começou o ataque atual
         self.attack_duration = 200     # ms que a animação de ataque permanece (duracao visual)
 
+        # pega os frames diretamente do dict de assets
+        self.walk_frames = [self.assets[PLAYER_WALK1_IMG], self.assets[PLAYER_WALK2_IMG], self.assets[PLAYER_WALK3_IMG], self.assets[PLAYER_WALK2_IMG]]
+        self.walk_index = 0
+        self.last_walk_time = 0
+        self.walk_interval = WALK_ANIM_INTERVAL
+
     def update(self):
         # Atualiza física
         self.apply_physics()
@@ -90,13 +96,23 @@ class Player(PhysicsEntity):
             if now - self.attack_timer >= self.attack_duration:
                 self.state = STILL  # volta ao normal quando o timer expirar
 
-        # --- Escolha de imagem com prioridade: ATTACKING > JUMPING/FALLING > STILL ---
+        # --- Escolha de imagem com prioridade: ATTACKING > JUMPING/FALLING > WALK (se movendo) > STILL ---
         if self.state == ATTACKING:
             img = self.assets[PLAYER_ATTACK_IMG]
         elif not self.on_ground:
+            # pular / cair tem precedência
             img = self.assets[PLAYER_JUMP_IMG]
         else:
-            img = self.assets[PLAYER_IMG]
+            # estamos no chão
+            if self.direction != 0:
+                # animação de caminhada — avança frame conforme intervalo
+                if now - self.last_walk_time >= self.walk_interval:
+                    self.walk_index = (self.walk_index + 1) % len(self.walk_frames)
+                    self.last_walk_time = now
+                img = self.walk_frames[self.walk_index]
+            else:
+                # parado
+                img = self.assets[PLAYER_IMG]
 
         # aplica flip conforme direção olhando
         if self.looking == -1:
@@ -151,9 +167,9 @@ class Zombie(GroundEnemy):
     def __init__(self, groups, assets, all_blocks):
         super().__init__(groups, assets, 'zombie', all_blocks, speed=2)
 
-class Skeleton(GroundEnemy):
+class Ghost(GroundEnemy):
     def __init__(self, groups, assets, all_blocks):
-        super().__init__(groups, assets, 'skeleton', all_blocks, speed=2)
+        super().__init__(groups, assets, 'ghost', all_blocks, speed=2)
         
     def move_to_player(self, player, assets):
         #Move o esqueleto em direção ao jogador com pulo
