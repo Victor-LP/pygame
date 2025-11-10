@@ -60,7 +60,7 @@ def load_assets():
     assets[ATTACK_IMG] = pygame.transform.scale_by(assets[ATTACK_IMG], ATTACK_SCALE)
     
     # Blocos e cenário
-    assets[BLOCK_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'blocoteste.png')).convert_alpha()
+    assets[BLOCK_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'block.png')).convert_alpha()
     assets[BLOCK_IMG] = pygame.transform.scale(assets[BLOCK_IMG], (BLOCK_WIDTH, BLOCK_HEIGHT))
     
     assets[BACKGROUND_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'background.png')).convert_alpha()
