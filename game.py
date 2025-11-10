@@ -1,5 +1,5 @@
 import pygame
-from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK
+from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK, GAME_OVER
 from assets import load_assets
 from sprites import Tile, Player, Zombie, Bat, Ghost
 
@@ -119,7 +119,7 @@ def game_screen(window):
         if hits:
             player_alive = player.hit()
         if not player_alive:
-            running = False
+            return GAME_OVER
 
         # ========== RENDERIZAÇÃO ==========
         window.fill(GRAY)
@@ -134,3 +134,4 @@ def game_screen(window):
         hp_text = font.render(f"HP: {player.hp}", True, (255, 0, 0))
         window.blit(hp_text, (10, 10))
         pygame.display.flip()
+    return GAME_OVER

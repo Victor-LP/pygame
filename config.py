@@ -42,6 +42,7 @@ GRAY = (100, 100, 100)
 INIT = 0
 GAME = 1
 QUIT = 2
+GAME_OVER = 3
 
 # ========== ESTADOS DO PERSONAGEM ==========
 STILL = 0

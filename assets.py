@@ -21,6 +21,7 @@ SOM_ESPADA = 'som_espada'
 SOM_PULO = 'som_pulo'
 SOM_DANO = 'som_dano'
 START_IMG = 'startimage'
+GAME_OVER_IMG = 'game_over'
 def load_assets():
     #Carrega e escala todos os assets do jogo
     assets = {}
@@ -66,9 +67,11 @@ def load_assets():
     assets[BLOCK_IMG] = pygame.transform.scale(assets[BLOCK_IMG], (BLOCK_WIDTH, BLOCK_HEIGHT))
     
     assets[BACKGROUND_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'background.png')).convert_alpha()
-    
     assets[BACKGROUND_IMG] = pygame.image.load(os.path.join(IMG_DIR,'background.png')).convert_alpha()
     assets[BACKGROUND_IMG] = pygame.transform.scale_by(assets[BACKGROUND_IMG], BAT_SCALE)
+    assets[GAME_OVER_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'game_over.png')).convert_alpha()
+    assets[GAME_OVER_IMG] = pygame.image.load(os.path.join(IMG_DIR,'game_over.png')).convert_alpha()
+    assets[GAME_OVER_IMG] = pygame.transform.scale_by(assets[GAME_OVER_IMG], BAT_SCALE)
     assets[START_IMG] = pygame.image.load(os.path.join(IMG_DIR,'tela_inicial.png')).convert_alpha()
     assets[START_IMG] = pygame.transform.scale_by(assets[START_IMG], BAT_SCALE)
 
