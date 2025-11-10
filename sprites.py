@@ -63,6 +63,8 @@ class PhysicsEntity(pygame.sprite.Sprite):
             self.speedy = JUMP_SIZE
             self.state = JUMPING
             self.on_ground = False
+            if 'som_pulo' in self.assets:
+                self.assets['som_pulo'].play()
 
 # ========== CLASSE DO JOGADOR ==========
 class Player(PhysicsEntity):
@@ -159,6 +161,8 @@ class Player(PhysicsEntity):
             self.hit_timer = now
             self.last_hit = now
             self.hp -=1
+            if 'som_dano' in self.assets:
+                self.assets['som_dano'].play()
             if self.hp <= 0:
                 return False
         return True

@@ -2,7 +2,7 @@ import pygame
 import os
 from config import IMG_DIR, PLAYER_SCALE, ZOMBIE_SCALE, BAT_SCALE, GHOST_SCALE, ATTACK_SCALE, BLOCK_HEIGHT, BLOCK_WIDTH
 
-# ========== CONSTANTES DE IMAGENS ==========
+# ========== CONSTANTES DE IMAGENS E EFEITOS SONOROS ==========
 PLAYER_IMG = 'player'
 PLAYER_JUMP_IMG = 'player_jump'
 PLAYER_ATTACK_IMG = 'player_attack'
@@ -18,6 +18,8 @@ ATTACK_IMG = 'attack'
 BLOCK_IMG = 'block'
 BACKGROUND_IMG = 'background'
 SOM_ESPADA = 'som_espada'
+SOM_PULO = 'som_pulo'
+SOM_DANO = 'som_dano'
 START_IMG = 'startimage'
 def load_assets():
     #Carrega e escala todos os assets do jogo
@@ -74,4 +76,8 @@ def load_assets():
     pygame.mixer.music.set_volume(0.8)
     musica_medieval = pygame.mixer.Sound('assets/snd/musicamedieval3min.wav')
     assets[SOM_ESPADA] = pygame.mixer.Sound('assets/snd/somespada.wav')
+    assets[SOM_PULO] = pygame.mixer.Sound('assets/snd/jump1.wav')
+    assets[SOM_PULO].set_volume(0.5)
+    assets[SOM_DANO] = pygame.mixer.Sound('assets/snd/hurt1.wav')
+    assets[SOM_DANO].set_volume(0.6)
     return assets
