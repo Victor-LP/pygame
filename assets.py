@@ -17,7 +17,7 @@ GHOST_IMG = 'ghost'
 ATTACK_IMG = 'attack'
 BLOCK_IMG = 'block'
 BACKGROUND_IMG = 'background'
-
+SOM_ESPADA = 'som_espada'
 START_IMG = 'startimage'
 def load_assets():
     #Carrega e escala todos os assets do jogo
@@ -69,4 +69,9 @@ def load_assets():
     assets[BACKGROUND_IMG] = pygame.transform.scale_by(assets[BACKGROUND_IMG], BAT_SCALE)
     assets[START_IMG] = pygame.image.load(os.path.join(IMG_DIR,'tela_inicial.png')).convert_alpha()
     assets[START_IMG] = pygame.transform.scale_by(assets[START_IMG], BAT_SCALE)
+
+    pygame.mixer.music.load('assets/snd/musicamedieval3min.wav')
+    pygame.mixer.music.set_volume(0.8)
+    musica_medieval = pygame.mixer.Sound('assets/snd/musicamedieval3min.wav')
+    assets[SOM_ESPADA] = pygame.mixer.Sound('assets/snd/somespada.wav')
     return assets

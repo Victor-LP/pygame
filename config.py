@@ -8,6 +8,7 @@ FNT_DIR = path.join(path.dirname(__file__), 'assets', 'fnt')
 
 # ========== CONFIGURAÇÕES DE JANELA ==========
 pygame.init()
+pygame.mixer.init()
 window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 info = pygame.display.Info()
 WIDTH, HEIGHT = info.current_w, info.current_h
@@ -16,7 +17,7 @@ FPS = 60
 # ========== CONFIGURAÇÕES DE FÍSICA ==========
 GRAVITY = 0.6
 JUMP_SIZE = -20
-WALK_ANIM_INTERVAL = 300
+WALK_ANIM_INTERVAL = 200
 
 # ========== CONFIGURAÇÕES DE SPRITES ==========
 STD_SCALE = WIDTH/9000
@@ -54,7 +55,7 @@ EMPTY = -1
 # ========== GERAÇÃO DO MAPA ==========
 MAP = []
 height = 200
-width = 18
+width = 20
 
 for y in range(height):
     row = [EMPTY] * width

@@ -1,7 +1,7 @@
 import pygame
 import random
 from config import WIDTH, HEIGHT, GRAVITY, BLOCK_HEIGHT, BLOCK_WIDTH, JUMP_SIZE, STILL, JUMPING, FALLING, ATTACKING, WALK_ANIM_INTERVAL
-from assets import PLAYER_JUMP_IMG,PLAYER_ATTACK_IMG,PLAYER_IMG,PLAYER_WALK1_IMG,PLAYER_WALK2_IMG,PLAYER_WALK3_IMG
+from assets import PLAYER_JUMP_IMG,PLAYER_ATTACK_IMG,PLAYER_IMG,PLAYER_WALK1_IMG,PLAYER_WALK2_IMG,PLAYER_WALK3_IMG, SOM_ESPADA
 
 # ========== CLASSE MÃE PARA ENTIDADES COM FÍSICA ==========
 class PhysicsEntity(pygame.sprite.Sprite):
@@ -123,10 +123,12 @@ class Player(PhysicsEntity):
         self.mask = pygame.mask.from_surface(self.image)
 
 
-    def attack(self):
+    def attack(self, assets):
         now = pygame.time.get_ticks()
+        self.somespada = assets[SOM_ESPADA]
         # só inicia um novo ataque se não estiver em cooldown
         if now - self.last_attack >= self.attack_cooldown:
+            self.somespada.play()
             self.state = ATTACKING
             self.attack_timer = now
             self.last_attack = now

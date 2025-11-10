@@ -74,7 +74,7 @@ def game_screen(window):
     running = True
     keys_down = {}
     pygame.key.set_repeat(1, 10)
-    
+    pygame.mixer.music.play(loops=-1)
     while running:
         clock.tick(FPS)
         
@@ -95,7 +95,7 @@ def game_screen(window):
                 elif event.key == pygame.K_w:
                     player.jump()
                 elif event.key == pygame.K_SPACE:
-                    player.attack()
+                    player.attack(assets)
                 elif event.key == pygame.K_ESCAPE:
                     running = False
             
