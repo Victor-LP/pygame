@@ -29,8 +29,8 @@ def game_screen(window):
     
     map_cols = len(MAP[0])
     map_rows = len(MAP)
-    map_width_px = map_cols * BLOCK_HEIGHT
-    map_height_px = map_rows * BLOCK_WIDTH
+    map_width_px = map_cols * BLOCK_WIDTH  # Corrigido: era BLOCK_HEIGHT
+    map_height_px = map_rows * BLOCK_HEIGHT  # Corrigido: era BLOCK_WIDTH
     offset_x = (WIDTH - map_width_px) // 2
     offset_y = (HEIGHT - map_height_px) // 2
 
@@ -44,12 +44,21 @@ def game_screen(window):
                 all_blocks.add(tile)
 
     # ========== CRIAÇÃO DE ENTIDADES ==========
-    # Player
+    # Player - POSICIONADO NO CANTO INFERIOR ESQUERDO DO MAPA
     player = Player(groups, assets, all_blocks)
+    
+    # Posiciona o player no canto inferior esquerdo do mapa (dentro da área jogável)
+    player_start_x = offset_x + BLOCK_WIDTH * 2  # 2 blocos a partir da borda esquerda
+    player_start_y = offset_y + map_height_px - BLOCK_HEIGHT * 2  # 2 blocos acima do fundo
+    
+    player.rect.x = player_start_x
+    player.rect.bottom = player_start_y  # Usa bottom para alinhar com o "chão"
+    
     all_players.add(player)
     all_sprites.add(player)
+
     # ==== MUITOS INIMIGOS NO TOPO ====
-    for i in range(10):  # ajuste a quantidade
+    for i in range(20):  # ajuste a quantidade
         enemy = random.choice([Zombie(groups, assets, all_blocks),
                            Ghost(groups, assets, all_blocks),
                            Bat(groups, assets, all_blocks)])
@@ -117,6 +126,7 @@ def game_screen(window):
         window.blit(background, (0, 0))
         
         # Câmera segue o jogador
+        camera_x = -player.rect.centerx + WIDTH // 2
         camera_y = -player.rect.centery + HEIGHT // 2
         
         for sprite in all_sprites:

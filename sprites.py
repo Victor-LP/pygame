@@ -72,9 +72,9 @@ class Player(PhysicsEntity):
         super().__init__(groups, assets, 'player', all_blocks)
         self.rect.centerx = 0
         self.rect.bottom = 0
-        self.speedx = 8
+        self.speedx = 6
         self.looking = 1  # 1 = direita, -1 = esquerda
-        self.hp = 10
+        self.hp = 5
 
         # Controle de ataque
         self.last_attack = 0            # tempo do último ataque (cooldown)
@@ -175,43 +175,138 @@ class GroundEnemy(PhysicsEntity):
         self.rect.centerx = WIDTH // 2
         self.rect.bottom = HEIGHT * 10
         self.speedx = speed
+        self.detection_range_x = 300  # Distância horizontal máxima para detectar player
+        self.detection_range_y = 200  # Distância vertical máxima para detectar player
 
     def update(self):
         # Atualiza a física do inimigo
         self.apply_physics()
 
+    def can_see_player(self, player):
+        # Verifica se o player está dentro do alcance de detecção
+        dist_x = abs(self.rect.centerx - player.rect.centerx)
+        dist_y = abs(self.rect.centery - player.rect.centery)
+        
+        # Só segue se estiver dentro do alcance horizontal E vertical
+        # E se o player não estiver muito abaixo (inimigos terrestres não sobem bem)
+        return (dist_x <= self.detection_range_x and 
+                dist_y <= self.detection_range_y and
+                player.rect.centery <= self.rect.centery + 100)  # Player não pode estar muito abaixo
+
     def move_to_player(self, player, assets):
+        # Só move se o player estiver dentro do alcance de detecção
+        if not self.can_see_player(player):
+            self.direction = 0  # Para de se mover
+            return
+        
         # Move o inimigo em direção ao jogador
-        if self.rect.x + 100 <= player.rect.x and player.rect.y <= self.rect.y:
+        if self.rect.centerx < player.rect.centerx - 50:  # Margem de 50px
             self.direction = 1
             self.image = assets[self.image_key]
-        elif self.rect.x - 100 > player.rect.x and player.rect.y <= self.rect.y:
+        elif self.rect.centerx > player.rect.centerx + 50:  # Margem de 50px
             self.direction = -1
             self.image = pygame.transform.flip(assets[self.image_key], True, False)
+        else:
+            self.direction = 0  # Para quando estiver perto o suficiente
 
 class Zombie(GroundEnemy):
     def __init__(self, groups, assets, all_blocks):
         super().__init__(groups, assets, 'zombie', all_blocks, speed=2)
+        self.detection_range_x = 250  # Alcance menor para zumbi
+        self.detection_range_y = 150
 
 class Ghost(GroundEnemy):
     def __init__(self, groups, assets, all_blocks):
         super().__init__(groups, assets, 'ghost', all_blocks, speed=5)
+        self.detection_range_x = 400  # Alcance maior para fantasma
+        self.detection_range_y = 300
         
     def move_to_player(self, player, assets):
-        #Move o esqueleto em direção ao jogador com pulo
-        super().move_to_player(player, assets)
-        if abs(self.rect.x - player.rect.x) < 100 and self.on_ground:
-            self.jump()
+        #Move o fantasma em direção ao jogador com pulo
+        if self.can_see_player(player):
+            super().move_to_player(player, assets)
+            # Fantasma pula quando está perto do player
+            if abs(self.rect.centerx - player.rect.centerx) < 100 and self.on_ground:
+                self.jump()
 
 # ========== CLASSE DO MORCEGO ==========
 class Bat(GroundEnemy):
     def __init__(self, groups, assets, all_blocks):
         super().__init__(groups, assets, 'bat1', all_blocks, speed=2)
+        # Adiciona velocidade vertical para voo
+        self.speedy = 0
+        self.flight_speed = 2  # Velocidade de voo vertical
+        self.detection_range_x = 500  # Alcance maior para morcego
+        self.detection_range_y = 400
+
+    def apply_physics(self):
+        # MORCEGO IGNORA GRAVIDADE mas NÃO ignora colisões
+        # Movimento horizontal com colisão
+        if self.blocks:
+            self.rect.x += self.speedx * self.direction
+            collisions = pygame.sprite.spritecollide(self, self.blocks, False)
+            
+            for collision in collisions:
+                move_x = self.speedx * self.direction
+                if move_x > 0:
+                    self.rect.right = collision.rect.left
+                elif move_x < 0:
+                    self.rect.left = collision.rect.right
+        else:
+            self.rect.x += self.speedx * self.direction
+
+        # Movimento vertical COM colisão
+        if self.blocks:
+            self.rect.y += self.speedy
+            collisions = pygame.sprite.spritecollide(self, self.blocks, False)
+            
+            for collision in collisions:
+                if self.speedy > 0:  # Descendo
+                    self.rect.bottom = collision.rect.top
+                    self.speedy = 0
+                elif self.speedy < 0:  # Subindo
+                    self.rect.top = collision.rect.bottom
+                    self.speedy = 0
+        else:
+            self.rect.y += self.speedy
+
+    def can_see_player(self, player):
+        # Morcego tem visão melhor - pode ver de mais longe
+        dist_x = abs(self.rect.centerx - player.rect.centerx)
+        dist_y = abs(self.rect.centery - player.rect.centery)
+        
+        return (dist_x <= self.detection_range_x and 
+                dist_y <= self.detection_range_y)
 
     def move_to_player(self, player, assets):
-        #Move o esqueleto em direção ao jogador com pulo
-        super().move_to_player(player, assets)
-        self.jump()
+        # Só move se o player estiver dentro do alcance de detecção
+        if not self.can_see_player(player):
+            self.direction = 0
+            self.speedy = 0  # Para movimento vertical também
+            return
+        
+        # Move horizontalmente em direção ao jogador
+        if self.rect.centerx < player.rect.centerx - 30:
+            self.direction = 1
+            self.image = assets[self.image_key]
+        elif self.rect.centerx > player.rect.centerx + 30:
+            self.direction = -1
+            self.image = pygame.transform.flip(assets[self.image_key], True, False)
+        else:
+            self.direction = 0
+        
+        # Move verticalmente em direção ao jogador (voa na altura do player)
+        # Usando uma abordagem mais simples para evitar colisões
+        if self.rect.centery < player.rect.centery - 20:
+            self.speedy = self.flight_speed  # Desce
+        elif self.rect.centery > player.rect.centery + 20:
+            self.speedy = -self.flight_speed  # Sobe
+        else:
+            self.speedy = 0  # Mantém altura
+
+    def update(self):
+        # Atualiza a física do morcego (sem gravidade mas com colisões)
+        self.apply_physics()
 
 # ========== CLASSE DO ATAQUE ==========
 class Attack(pygame.sprite.Sprite):
