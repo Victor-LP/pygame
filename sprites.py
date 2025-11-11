@@ -1,7 +1,7 @@
 import pygame
 import random
 from config import WIDTH, HEIGHT, GRAVITY, BLOCK_HEIGHT, BLOCK_WIDTH, JUMP_SIZE, STILL, JUMPING, FALLING, ATTACKING, WALK_ANIM_INTERVAL
-from assets import PLAYER_JUMP_IMG,PLAYER_ATTACK_IMG,PLAYER_IMG,PLAYER_WALK1_IMG,PLAYER_WALK2_IMG,PLAYER_WALK3_IMG, SOM_ESPADA
+from assets import PLAYER_JUMP_IMG,PLAYER_ATTACK_IMG,PLAYER_IMG,PLAYER_WALK1_IMG,PLAYER_WALK2_IMG,PLAYER_WALK3_IMG, SOM_ESPADA,ZOMBIE_IMG2,ZOMBIE_IMG
 
 # ========== CLASSE MÃE PARA ENTIDADES COM FÍSICA ==========
 class PhysicsEntity(pygame.sprite.Sprite):
@@ -72,7 +72,7 @@ class Player(PhysicsEntity):
         super().__init__(groups, assets, 'player', all_blocks)
         self.rect.centerx = 0
         self.rect.bottom = 0
-        self.speedx = 6
+        self.speedx = 7*(1+WIDTH//10000)
         self.looking = 1  # 1 = direita, -1 = esquerda
         self.hp = 5
 
@@ -86,10 +86,9 @@ class Player(PhysicsEntity):
         self.last_hit = 0 
         self.hit_cooldown = 500     # ms entre ataques (cooldown)
         self.hit_timer = 0          # tempo em que começou o ataque atual
-        # self.hit_duration = 200     # ms que a animação de ataque permanece (duracao visual)
 
         # pega os frames diretamente do dict de assets
-        self.walk_frames = [self.assets[PLAYER_WALK1_IMG], self.assets[PLAYER_IMG]]
+        self.walk_frames = [self.assets[PLAYER_WALK1_IMG], self.assets[PLAYER_WALK2_IMG]]
         self.walk_index = 0
         self.last_walk_time = 0
         self.walk_interval = WALK_ANIM_INTERVAL
@@ -135,7 +134,6 @@ class Player(PhysicsEntity):
     def attack(self, assets):
         now = pygame.time.get_ticks()
         self.somespada = assets[SOM_ESPADA]
-        # só inicia um novo ataque se não estiver em cooldown
         if now - self.last_attack >= self.attack_cooldown:
             self.somespada.play()
             self.state = ATTACKING
@@ -147,7 +145,7 @@ class Player(PhysicsEntity):
                 spawn_x = self.rect.centerx + 10
             else:
                 spawn_x = self.rect.left - 10
-            spawn_y = self.rect.centery
+            spawn_y = self.rect.centery - 20  # <-- aparece um pouco mais acima
 
             new_attack = Attack(self.assets, spawn_x, spawn_y, self.looking)
             self.groups['all_sprites'].add(new_attack)
@@ -177,6 +175,7 @@ class GroundEnemy(PhysicsEntity):
         self.speedx = speed
         self.detection_range_x = 300  # Distância horizontal máxima para detectar player
         self.detection_range_y = 200  # Distância vertical máxima para detectar player
+        self.looking = 1  # 1 direita, -1 esquerda (para flip)
 
     def update(self):
         # Atualiza a física do inimigo
@@ -194,26 +193,53 @@ class GroundEnemy(PhysicsEntity):
                 player.rect.centery <= self.rect.centery + 100)  # Player não pode estar muito abaixo
 
     def move_to_player(self, player, assets):
-        # Só move se o player estiver dentro do alcance de detecção
         if not self.can_see_player(player):
-            self.direction = 0  # Para de se mover
+            self.direction = 0
             return
         
-        # Move o inimigo em direção ao jogador
-        if self.rect.centerx < player.rect.centerx - 50:  # Margem de 50px
+        if self.rect.centerx < player.rect.centerx - 20:  # Reduzir margem
             self.direction = 1
-            self.image = assets[self.image_key]
-        elif self.rect.centerx > player.rect.centerx + 50:  # Margem de 50px
+            self.looking = 1
+        elif self.rect.centerx > player.rect.centerx + 20:  # Reduzir margem
             self.direction = -1
-            self.image = pygame.transform.flip(assets[self.image_key], True, False)
+            self.looking = -1
         else:
-            self.direction = 0  # Para quando estiver perto o suficiente
+            self.direction = 0  # Só para quando estiver muito perto
 
 class Zombie(GroundEnemy):
     def __init__(self, groups, assets, all_blocks):
         super().__init__(groups, assets, 'zombie', all_blocks, speed=2)
-        self.detection_range_x = 250  # Alcance menor para zumbi
+        self.detection_range_x = 250
         self.detection_range_y = 150
+
+        self.walk_frames = [self.assets[ZOMBIE_IMG], self.assets[ZOMBIE_IMG2]]
+        self.walk_index = 0
+        self.last_walk_time = 0
+        self.walk_interval = WALK_ANIM_INTERVAL
+
+    def update(self):
+        print(f"Zombie direction: {self.direction}, looking: {self.looking}")
+        # PRIMEIRO: Atualiza a animação
+        now = pygame.time.get_ticks()
+        if self.direction != 0:
+            if now - self.last_walk_time >= self.walk_interval:
+                self.walk_index = (self.walk_index + 1) % len(self.walk_frames)
+                self.last_walk_time = now
+            img = self.walk_frames[self.walk_index]
+        else:
+            img = self.walk_frames[0]
+
+        # Aplica flip se necessário
+        if self.looking == -1:
+            img = pygame.transform.flip(img, True, False)
+
+        self.image = img
+        self.mask = pygame.mask.from_surface(self.image)
+
+        # DEPOIS: Aplica a física (movimento)
+        self.apply_physics()
+
+
 
 class Ghost(GroundEnemy):
     def __init__(self, groups, assets, all_blocks):
@@ -288,9 +314,11 @@ class Bat(GroundEnemy):
         # Move horizontalmente em direção ao jogador
         if self.rect.centerx < player.rect.centerx - 30:
             self.direction = 1
+            self.looking = 1
             self.image = assets[self.image_key]
         elif self.rect.centerx > player.rect.centerx + 30:
             self.direction = -1
+            self.looking = -1
             self.image = pygame.transform.flip(assets[self.image_key], True, False)
         else:
             self.direction = 0
@@ -338,6 +366,16 @@ class Tile(pygame.sprite.Sprite):
     def __init__(self, groups, assets, row, column):
         super().__init__()
         self.image = assets['block']
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.groups = groups
+        self.rect.x = column * BLOCK_WIDTH
+        self.rect.y = row * BLOCK_HEIGHT
+
+class Objective(pygame.sprite.Sprite):
+    def __init__(self, groups, assets, row, column):
+        super().__init__()
+        self.image = assets['tresure']
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.groups = groups

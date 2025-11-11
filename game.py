@@ -58,7 +58,7 @@ def game_screen(window):
     all_sprites.add(player)
 
     # ==== MUITOS INIMIGOS NO TOPO ====
-    for i in range(20):  # ajuste a quantidade
+    for i in range(30):  # ajuste a quantidade
         enemy = random.choice([Zombie(groups, assets, all_blocks),
                            Ghost(groups, assets, all_blocks),
                            Bat(groups, assets, all_blocks)])

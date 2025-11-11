@@ -61,5 +61,5 @@ def game_over_screen(window):
 
         window.blit(bg, (0, 0))
         hovered = btn_rect.collidepoint(pygame.mouse.get_pos())
-        pygame.draw.rect(window, (255, 255, 255), btn_rect, width=4 if hovered else 2, border_radius=8)
+        pygame.draw.rect(window, (255, 0, 0), btn_rect, width=4 if hovered else 2, border_radius=8)
         pygame.display.flip()

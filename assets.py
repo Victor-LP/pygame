@@ -10,6 +10,7 @@ PLAYER_WALK1_IMG = 'player_walk1'
 PLAYER_WALK2_IMG = 'player_walk2'
 PLAYER_WALK3_IMG = 'player_walk3'
 ZOMBIE_IMG = 'zombie'
+ZOMBIE_IMG2 = 'zombie2'
 BAT_IMG1 = 'bat1'
 BAT_IMG2 = 'bat2'
 BAT_IMG3 = 'bat3'
@@ -42,8 +43,10 @@ def load_assets():
     assets[PLAYER_WALK3_IMG] = pygame.transform.scale_by(assets[PLAYER_WALK3_IMG], PLAYER_SCALE)
     
     # Inimigos
-    assets[ZOMBIE_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'zumbiteste1.png')).convert_alpha()
+    assets[ZOMBIE_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'zombie.png')).convert_alpha()
     assets[ZOMBIE_IMG] = pygame.transform.scale_by(assets[ZOMBIE_IMG], ZOMBIE_SCALE)
+    assets[ZOMBIE_IMG2] = pygame.image.load(os.path.join(IMG_DIR, 'zombie2.png')).convert_alpha()
+    assets[ZOMBIE_IMG2] = pygame.transform.scale_by(assets[ZOMBIE_IMG2], ZOMBIE_SCALE)
     
     assets[GHOST_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'ghost.png')).convert_alpha()
     assets[GHOST_IMG] = pygame.transform.scale_by(assets[GHOST_IMG], GHOST_SCALE)
@@ -59,7 +62,7 @@ def load_assets():
     assets[BAT_IMG3] = pygame.transform.scale_by(assets[BAT_IMG3], BAT_SCALE)
     
     # Ataque
-    assets[ATTACK_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'attackteste1.png')).convert_alpha()
+    assets[ATTACK_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'attack.png')).convert_alpha()
     assets[ATTACK_IMG] = pygame.transform.scale_by(assets[ATTACK_IMG], ATTACK_SCALE)
     
     # Blocos e cenário
