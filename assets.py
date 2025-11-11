@@ -16,6 +16,7 @@ BAT_IMG2 = 'bat2'
 GHOST_IMG = 'ghost'
 ATTACK_IMG = 'attack'
 BLOCK_IMG = 'block'
+OBJECTIVE_IMG = 'tresure'
 BACKGROUND_IMG = 'background'
 SOM_ESPADA = 'som_espada'
 SOM_PULO = 'som_pulo'
@@ -63,6 +64,9 @@ def load_assets():
     # Blocos e cenário
     assets[BLOCK_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'block.png')).convert_alpha()
     assets[BLOCK_IMG] = pygame.transform.scale(assets[BLOCK_IMG], (BLOCK_WIDTH, BLOCK_HEIGHT))
+    assets[OBJECTIVE_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'objective.png')).convert_alpha()
+    assets[OBJECTIVE_IMG] = pygame.transform.scale(assets[OBJECTIVE_IMG], (BLOCK_WIDTH, BLOCK_HEIGHT))
+    
     
     assets[BACKGROUND_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'background.png')).convert_alpha()
     assets[BACKGROUND_IMG] = pygame.image.load(os.path.join(IMG_DIR,'background.png')).convert_alpha()

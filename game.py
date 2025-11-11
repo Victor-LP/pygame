@@ -1,7 +1,7 @@
 import pygame
-from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK, GAME_OVER, INIT
+from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK, GAME_OVER, INIT, OBJECTIVE, GAME_WON
 from assets import load_assets
-from sprites import Tile, Player, Zombie, Bat, Ghost
+from sprites import Tile, Player, Zombie, Bat, Ghost, Objective
 import random
 
 def game_screen(window):
@@ -16,21 +16,23 @@ def game_screen(window):
     all_enemies = pygame.sprite.Group()
     all_attacks = pygame.sprite.Group()
     all_players = pygame.sprite.Group()
+    all_objectives = pygame.sprite.Group()
     
     groups = {
         'all_sprites': all_sprites,
         'all_blocks': all_blocks,
         'all_enemies': all_enemies,
         'all_attacks': all_attacks,
-        'all_players': all_players
+        'all_players': all_players,
+        'all_objectives': all_objectives
     }
     
     # ========== CARREGAMENTO DO MAPA ==========
     
     map_cols = len(MAP[0])
     map_rows = len(MAP)
-    map_width_px = map_cols * BLOCK_WIDTH  # Corrigido: era BLOCK_HEIGHT
-    map_height_px = map_rows * BLOCK_HEIGHT  # Corrigido: era BLOCK_WIDTH
+    map_width_px = map_cols * BLOCK_WIDTH
+    map_height_px = map_rows * BLOCK_HEIGHT
     offset_x = (WIDTH - map_width_px) // 2
     offset_y = (HEIGHT - map_height_px) // 2
 
@@ -42,6 +44,12 @@ def game_screen(window):
                 tile.rect.y += offset_y
                 all_sprites.add(tile)
                 all_blocks.add(tile)
+            elif MAP[row][column] == OBJECTIVE:
+                tile = Objective(groups, assets, row, column)
+                tile.rect.x += offset_x
+                tile.rect.y += offset_y
+                all_sprites.add(tile)
+                all_objectives.add(tile)
 
     # ========== CRIAÇÃO DE ENTIDADES ==========
     # Player - POSICIONADO NO CANTO INFERIOR ESQUERDO DO MAPA
@@ -120,6 +128,7 @@ def game_screen(window):
         # Detecção de colisões
         pygame.sprite.groupcollide(all_enemies, all_attacks, True, True, pygame.sprite.collide_mask)
         hits = pygame.sprite.groupcollide(all_enemies, all_players, False, False, pygame.sprite.collide_mask)
+        pygame.sprite.groupcollide(all_players,all_objectives, False, True)
         if hits:
             player_alive = player.hit()
         if not player_alive:
@@ -139,4 +148,7 @@ def game_screen(window):
         hp_text = font.render(f"HP: {player.hp}", True, (255, 0, 0))
         window.blit(hp_text, (10, 10))
         pygame.display.flip()
-    return GAME_OVER
+        if len(all_objectives) <= 0:
+            running = False
+            status = GAME_WON
+    return status

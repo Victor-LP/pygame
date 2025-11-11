@@ -1,7 +1,7 @@
 import pygame
 import random
 from config import WIDTH, HEIGHT, GRAVITY, BLOCK_HEIGHT, BLOCK_WIDTH, JUMP_SIZE, STILL, JUMPING, FALLING, ATTACKING, WALK_ANIM_INTERVAL
-from assets import PLAYER_JUMP_IMG,PLAYER_ATTACK_IMG,PLAYER_IMG,PLAYER_WALK1_IMG,PLAYER_WALK2_IMG,PLAYER_WALK3_IMG, SOM_ESPADA,ZOMBIE_IMG2,ZOMBIE_IMG,BAT_IMG,BAT_IMG2
+from assets import PLAYER_JUMP_IMG,PLAYER_ATTACK_IMG,PLAYER_IMG,PLAYER_WALK1_IMG,PLAYER_WALK2_IMG,PLAYER_WALK3_IMG, SOM_ESPADA,ZOMBIE_IMG2 ,ZOMBIE_IMG, BAT_IMG, BAT_IMG2, OBJECTIVE_IMG
 
 # ========== CLASSE MÃE PARA ENTIDADES COM FÍSICA ==========
 class PhysicsEntity(pygame.sprite.Sprite):
@@ -74,7 +74,7 @@ class Player(PhysicsEntity):
         self.rect.bottom = 0
         self.speedx = 7*(1+WIDTH//10000)
         self.looking = 1  # 1 = direita, -1 = esquerda
-        self.hp = 5
+        self.hp = 10
 
         # Controle de ataque
         self.last_attack = 0            # tempo do último ataque (cooldown)
