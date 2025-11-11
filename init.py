@@ -9,6 +9,11 @@ def _draw_button(surface, rect, hovered):
 def title_screen(window):
     clock = pygame.time.Clock()
     assets = load_assets()
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load('assets/snd/menu_music.wav')
+    pygame.mixer.music.set_volume(0.5)
+    pygame.mixer.music.play(loops=-1)
+
 
     start_img = assets.get(START_IMG) or assets.get(BACKGROUND_IMG)
     bg = pygame.transform.scale(start_img, (WIDTH, HEIGHT))
@@ -39,6 +44,11 @@ def title_screen(window):
 def game_over_screen(window):
     clock = pygame.time.Clock()
     assets = load_assets()
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load('assets/snd/game_over.wav')
+    pygame.mixer.music.set_volume(0.5)
+    pygame.mixer.music.play(loops=-1)
+
     bg = pygame.transform.scale(assets[GAME_OVER_IMG], (WIDTH, HEIGHT))
 
     btn_w, btn_h = 325, 120

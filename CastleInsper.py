@@ -12,6 +12,7 @@ def main():
         if state == INIT:
             state = title_screen(window)
         elif state == GAME:
+            pygame.mixer.music.stop()
             state = game_screen(window)
         elif state == GAME_OVER:
             state = game_over_screen(window)

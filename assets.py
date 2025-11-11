@@ -73,9 +73,13 @@ def load_assets():
     assets[START_IMG] = pygame.image.load(os.path.join(IMG_DIR,'tela_inicial.png')).convert_alpha()
     assets[START_IMG] = pygame.transform.scale_by(assets[START_IMG], BAT_SCALE)
 
+    # ========== MÚSICAS DE FUNDO ==========
     pygame.mixer.music.load('assets/snd/musicamedieval3min.wav')
     pygame.mixer.music.set_volume(0.4)
     musica_medieval = pygame.mixer.Sound('assets/snd/musicamedieval3min.wav')
+    
+    # ========== SFX ==========
+
     assets[SOM_ESPADA] = pygame.mixer.Sound('assets/snd/somespada.wav')
     assets[SOM_ESPADA].set_volume(0.4)
     assets[SOM_PULO] = pygame.mixer.Sound('assets/snd/flapsound.wav')
