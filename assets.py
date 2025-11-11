@@ -1,6 +1,6 @@
 import pygame
 import os
-from config import IMG_DIR, PLAYER_SCALE, ZOMBIE_SCALE, BAT_SCALE, GHOST_SCALE, ATTACK_SCALE, BLOCK_HEIGHT, BLOCK_WIDTH
+from config import IMG_DIR, PLAYER_SCALE, ZOMBIE_SCALE, BAT_SCALE, GHOST_SCALE, ATTACK_SCALE, BLOCK_HEIGHT, BLOCK_WIDTH, FNT_DIR
 
 # ========== CONSTANTES DE IMAGENS E EFEITOS SONOROS ==========
 PLAYER_IMG = 'player'
@@ -23,6 +23,7 @@ SOM_DANO = 'som_dano'
 START_IMG = 'startimage'
 GAME_OVER_IMG = 'game_over'
 GAME_WON_IMG = 'game_won'
+FONTE = 'fonte'
 def load_assets():
     #Carrega e escala todos os assets do jogo
     assets = {}
@@ -90,4 +91,5 @@ def load_assets():
     assets[SOM_PULO].set_volume(0.7)
     assets[SOM_DANO] = pygame.mixer.Sound('assets/snd/hurt1.wav')
     assets[SOM_DANO].set_volume(0.3)
+    assets[FONTE] = pygame.font.Font(os.path.join(FNT_DIR, 'Styleturn-DEMO.otf'), 50)
     return assets

@@ -1,6 +1,6 @@
 import pygame
-from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK, GAME_OVER, INIT, GAME_WON, OBJECTIVE
-from assets import load_assets
+from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK, GAME_OVER, INIT, GAME_WON, OBJECTIVE, QUIT, RED
+from assets import load_assets, SOM_DANO, FONTE
 from sprites import Tile, Player, Zombie, Bat, Ghost, Objective
 import random
 
@@ -106,6 +106,7 @@ def game_screen(window):
                     player.attack(assets)
                 elif event.key == pygame.K_ESCAPE:
                     running = False
+                    return QUIT
                 elif event.key == pygame.K_m:
                     pygame.mixer.music.stop()
                     pygame.mixer.music.fadeout(1000)
@@ -128,7 +129,9 @@ def game_screen(window):
         # Detecção de colisões
         pygame.sprite.groupcollide(all_enemies, all_attacks, True, True, pygame.sprite.collide_mask)
         hits = pygame.sprite.groupcollide(all_enemies, all_players, False, False, pygame.sprite.collide_mask)
-        pygame.sprite.groupcollide(all_players,all_objectives, False, True)
+        get = pygame.sprite.groupcollide(all_players,all_objectives, False, True)
+        if get:
+            assets[SOM_DANO].play()
         if hits:
             player_alive = player.hit()
         if not player_alive:
@@ -144,9 +147,10 @@ def game_screen(window):
         
         for sprite in all_sprites:
             window.blit(sprite.image, (sprite.rect.x + camera_x, sprite.rect.y + camera_y))
-        font = pygame.font.Font(None, 36)
-        hp_text = font.render(f"HP: {player.hp}", True, (255, 0, 0))
-        window.blit(hp_text, (10, 10))
+        text_surface = assets[FONTE].render("{} HP".format(player.hp), True, RED)
+        text_rect = text_surface.get_rect()
+        text_rect.midtop = (70,20)
+        window.blit(text_surface, text_rect)
         pygame.display.flip()
         if len(all_objectives) <= 0:
             running = False
