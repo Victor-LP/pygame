@@ -1,5 +1,5 @@
 import pygame
-from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK, GAME_OVER
+from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK, GAME_OVER, INIT
 from assets import load_assets
 from sprites import Tile, Player, Zombie, Bat, Ghost
 import random
@@ -83,7 +83,6 @@ def game_screen(window):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            
             elif event.type == pygame.KEYDOWN:
                 keys_down[event.key] = True
                 
@@ -99,6 +98,11 @@ def game_screen(window):
                     player.attack(assets)
                 elif event.key == pygame.K_ESCAPE:
                     running = False
+                elif event.key == pygame.K_m:
+                    pygame.mixer.music.stop()
+                    pygame.mixer.music.fadeout(1000)
+                    return INIT
+
             
             elif event.type == pygame.KEYUP:
                 if event.key in keys_down:
