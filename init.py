@@ -130,7 +130,7 @@ def game_won_screen(window):
 
     btn_w, btn_h = 325, 120
     btn_rect = pygame.Rect(0, 0, btn_w, btn_h)
-    btn_rect.center = (WIDTH // 2.042, int(HEIGHT * 0.628))
+    btn_rect.center = (WIDTH // 2.042, int(HEIGHT * 0.))
     while True:
         clock.tick(FPS)
         for event in pygame.event.get():

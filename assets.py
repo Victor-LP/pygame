@@ -8,7 +8,6 @@ PLAYER_JUMP_IMG = 'player_jump'
 PLAYER_ATTACK_IMG = 'player_attack'
 PLAYER_WALK1_IMG = 'player_walk1'
 PLAYER_WALK2_IMG = 'player_walk2'
-PLAYER_WALK3_IMG = 'player_walk3'
 ZOMBIE_IMG = 'zombie'
 ZOMBIE_IMG2 = 'zombie2'
 BAT_IMG = 'bat'
@@ -40,8 +39,6 @@ def load_assets():
     assets[PLAYER_WALK1_IMG] = pygame.transform.scale_by(assets[PLAYER_WALK1_IMG], PLAYER_SCALE)
     assets[PLAYER_WALK2_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'playerwalk2.png'))
     assets[PLAYER_WALK2_IMG] = pygame.transform.scale_by(assets[PLAYER_WALK2_IMG], PLAYER_SCALE)
-    assets[PLAYER_WALK3_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'playerwalk3.png'))
-    assets[PLAYER_WALK3_IMG] = pygame.transform.scale_by(assets[PLAYER_WALK3_IMG], PLAYER_SCALE)
     
     # Inimigos
     assets[ZOMBIE_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'zombie.png')).convert_alpha()
