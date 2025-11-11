@@ -1,7 +1,7 @@
 import pygame
 import random
 from config import WIDTH, HEIGHT, GRAVITY, BLOCK_HEIGHT, BLOCK_WIDTH, JUMP_SIZE, STILL, JUMPING, FALLING, ATTACKING, WALK_ANIM_INTERVAL
-from assets import PLAYER_JUMP_IMG,PLAYER_ATTACK_IMG,PLAYER_IMG,PLAYER_WALK1_IMG,PLAYER_WALK2_IMG,PLAYER_WALK3_IMG, SOM_ESPADA,ZOMBIE_IMG2,ZOMBIE_IMG
+from assets import PLAYER_JUMP_IMG,PLAYER_ATTACK_IMG,PLAYER_IMG,PLAYER_WALK1_IMG,PLAYER_WALK2_IMG,PLAYER_WALK3_IMG, SOM_ESPADA,ZOMBIE_IMG2,ZOMBIE_IMG,BAT_IMG,BAT_IMG2
 
 # ========== CLASSE MÃE PARA ENTIDADES COM FÍSICA ==========
 class PhysicsEntity(pygame.sprite.Sprite):
@@ -218,7 +218,6 @@ class Zombie(GroundEnemy):
         self.walk_interval = WALK_ANIM_INTERVAL
 
     def update(self):
-        print(f"Zombie direction: {self.direction}, looking: {self.looking}")
         # PRIMEIRO: Atualiza a animação
         now = pygame.time.get_ticks()
         if self.direction != 0:
@@ -258,12 +257,22 @@ class Ghost(GroundEnemy):
 # ========== CLASSE DO MORCEGO ==========
 class Bat(GroundEnemy):
     def __init__(self, groups, assets, all_blocks):
-        super().__init__(groups, assets, 'bat1', all_blocks, speed=2)
+        super().__init__(groups, assets, BAT_IMG, all_blocks, speed=2)
         # Adiciona velocidade vertical para voo
         self.speedy = 0
-        self.flight_speed = 2  # Velocidade de voo vertical
-        self.detection_range_x = 500  # Alcance maior para morcego
+        self.flight_speed = 2
+        self.detection_range_x = 500
         self.detection_range_y = 400
+
+        # --- animação do morcego ---
+        self.walk_frames = [
+            self.assets[BAT_IMG],
+            self.assets[BAT_IMG2]
+            # Use apenas 2 frames
+        ]
+        self.walk_index = 0
+        self.last_walk_time = 0
+        self.walk_interval = WALK_ANIM_INTERVAL
 
     def apply_physics(self):
         # MORCEGO IGNORA GRAVIDADE mas NÃO ignora colisões
@@ -308,32 +317,48 @@ class Bat(GroundEnemy):
         # Só move se o player estiver dentro do alcance de detecção
         if not self.can_see_player(player):
             self.direction = 0
-            self.speedy = 0  # Para movimento vertical também
+            self.speedy = 0
             return
         
         # Move horizontalmente em direção ao jogador
         if self.rect.centerx < player.rect.centerx - 30:
             self.direction = 1
             self.looking = 1
-            self.image = assets[self.image_key]
         elif self.rect.centerx > player.rect.centerx + 30:
             self.direction = -1
             self.looking = -1
-            self.image = pygame.transform.flip(assets[self.image_key], True, False)
         else:
             self.direction = 0
         
-        # Move verticalmente em direção ao jogador (voa na altura do player)
-        # Usando uma abordagem mais simples para evitar colisões
+        # Move verticalmente em direção ao jogador
         if self.rect.centery < player.rect.centery - 20:
-            self.speedy = self.flight_speed  # Desce
+            self.speedy = self.flight_speed
         elif self.rect.centery > player.rect.centery + 20:
-            self.speedy = -self.flight_speed  # Sobe
+            self.speedy = -self.flight_speed
         else:
-            self.speedy = 0  # Mantém altura
+            self.speedy = 0
 
     def update(self):
-        # Atualiza a física do morcego (sem gravidade mas com colisões)
+        # PRIMEIRO: Atualiza a animação
+        now = pygame.time.get_ticks()
+        
+        # Morcego sempre anima quando está se movendo
+        if self.direction != 0 or self.speedy != 0:
+            if now - self.last_walk_time >= self.walk_interval:
+                self.walk_index = (self.walk_index + 1) % len(self.walk_frames)
+                self.last_walk_time = now
+            img = self.walk_frames[self.walk_index]
+        else:
+            img = self.walk_frames[0]
+
+        # Aplica flip se necessário
+        if self.looking == -1:
+            img = pygame.transform.flip(img, True, False)
+
+        self.image = img
+        self.mask = pygame.mask.from_surface(self.image)
+
+        # DEPOIS: Aplica a física (movimento)
         self.apply_physics()
 
 # ========== CLASSE DO ATAQUE ==========
