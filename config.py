@@ -44,6 +44,7 @@ GAME = 1
 QUIT = 2
 GAME_OVER = 3
 GAME_WON = 4
+TUTORIAL = 5
 
 # ========== ESTADOS DO PERSONAGEM ==========
 STILL = 0

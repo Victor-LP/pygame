@@ -1,5 +1,5 @@
 import pygame
-from config import WIDTH, HEIGHT, FPS, INIT, GAME, QUIT
+from config import WIDTH, HEIGHT, FPS, INIT, GAME, QUIT, TUTORIAL
 from assets import load_assets, START_IMG, BACKGROUND_IMG, GAME_OVER_IMG
 
 def _draw_button(surface, rect, hovered):
@@ -35,7 +35,7 @@ def title_screen(window):
                     return QUIT
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if btn_rect.collidepoint(pygame.mouse.get_pos()):
-                    return GAME
+                    return TUTORIAL
 
         window.blit(bg, (0, 0))
         hovered = btn_rect.collidepoint(pygame.mouse.get_pos())
@@ -74,4 +74,46 @@ def game_over_screen(window):
         window.blit(bg, (0, 0))
         hovered = btn_rect.collidepoint(pygame.mouse.get_pos())
         pygame.draw.rect(window, (255, 0, 0), btn_rect, width=4 if hovered else 2, border_radius=8)
+        pygame.display.flip()
+
+def tutorial_screen(window):
+    clock = pygame.time.Clock()
+    assets = load_assets()
+    
+    bg = pygame.transform.scale(assets[BACKGROUND_IMG], (WIDTH, HEIGHT))
+    
+    font = pygame.font.Font(None, 48)
+    text_lines = [
+        "CONTROLES:",
+        "A/D   - Andar esquerda/direita",
+        "W     - Pular",
+        "SPACE - Atacar",
+        "M     - Menu",
+        "ESC   - Fechar Jogo",
+        "",
+        "Pressione ENTER para continuar"
+    ]
+    
+    rendered_lines = [font.render(line, True, (255, 255, 255)) for line in text_lines]
+
+    while True:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return QUIT
+            if event.type == pygame.KEYDOWN:
+                if event.key in (pygame.K_RETURN, pygame.K_SPACE):
+                    pygame.mixer.music.fadeout(500)
+                    return GAME
+                if event.key == pygame.K_ESCAPE:
+                    return QUIT
+        
+        window.blit(bg, (0, 0))
+        
+        y = HEIGHT * 0.25
+        for line in rendered_lines:
+            rect = line.get_rect(center=(WIDTH // 2, y))
+            window.blit(line, rect)
+            y += 60
+        
         pygame.display.flip()
