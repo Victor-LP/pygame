@@ -70,9 +70,9 @@ class PhysicsEntity(pygame.sprite.Sprite):
 class Player(PhysicsEntity):
     def __init__(self, groups, assets, all_blocks):
         super().__init__(groups, assets, 'player', all_blocks)
-        self.rect.centerx = WIDTH // 2
-        self.rect.bottom = HEIGHT * 10
-        self.speedx = 5
+        self.rect.centerx = 0
+        self.rect.bottom = 0
+        self.speedx = 8
         self.looking = 1  # 1 = direita, -1 = esquerda
         self.hp = 10
 
@@ -89,7 +89,7 @@ class Player(PhysicsEntity):
         # self.hit_duration = 200     # ms que a animação de ataque permanece (duracao visual)
 
         # pega os frames diretamente do dict de assets
-        self.walk_frames = [self.assets[PLAYER_WALK3_IMG], self.assets[PLAYER_WALK1_IMG], self.assets[PLAYER_IMG]]
+        self.walk_frames = [self.assets[PLAYER_WALK1_IMG], self.assets[PLAYER_IMG]]
         self.walk_index = 0
         self.last_walk_time = 0
         self.walk_interval = WALK_ANIM_INTERVAL
@@ -195,7 +195,7 @@ class Zombie(GroundEnemy):
 
 class Ghost(GroundEnemy):
     def __init__(self, groups, assets, all_blocks):
-        super().__init__(groups, assets, 'ghost', all_blocks, speed=2)
+        super().__init__(groups, assets, 'ghost', all_blocks, speed=5)
         
     def move_to_player(self, player, assets):
         #Move o esqueleto em direção ao jogador com pulo
@@ -204,45 +204,14 @@ class Ghost(GroundEnemy):
             self.jump()
 
 # ========== CLASSE DO MORCEGO ==========
-class Bat(pygame.sprite.Sprite):
-    def __init__(self, groups, assets):
-        super().__init__()
-        self.image = assets['bat1']
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.mask.get_rect()
-        self.rect.centerx = random.randint(0, WIDTH)
-        self.rect.y = random.randint(40, HEIGHT // 3)
-        self.groups = groups
-        self.assets = assets
-        self.direction = 1
-        self.speed = 2
-        self.switch_interval = 1500
-        self.last_switch = pygame.time.get_ticks()
+class Bat(GroundEnemy):
+    def __init__(self, groups, assets, all_blocks):
+        super().__init__(groups, assets, 'bat1', all_blocks, speed=2)
 
-    def update(self):
-        # Atualiza o movimento do morcego
-        now = pygame.time.get_ticks()
-        if now - self.last_switch >= self.switch_interval:
-            self.direction *= -1
-            self.last_switch = now
-
-        self.rect.x += self.speed * self.direction
-
-        # Atualiza animação baseada na direção
-        if self.direction == -1:
-            self.image = pygame.transform.flip(self.assets['bat2'], True, False)
-        else:
-            self.image = self.assets['bat3']
-
-        # Mantém dentro da tela
-        if self.rect.right > WIDTH:
-            self.rect.right = WIDTH
-            self.direction = -1
-            self.last_switch = now
-        if self.rect.left < 0:
-            self.rect.left = 0
-            self.direction = 1
-            self.last_switch = now
+    def move_to_player(self, player, assets):
+        #Move o esqueleto em direção ao jogador com pulo
+        super().move_to_player(player, assets)
+        self.jump()
 
 # ========== CLASSE DO ATAQUE ==========
 class Attack(pygame.sprite.Sprite):

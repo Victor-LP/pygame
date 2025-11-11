@@ -2,13 +2,14 @@ import pygame
 from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK, GAME_OVER
 from assets import load_assets
 from sprites import Tile, Player, Zombie, Bat, Ghost
+import random
 
 def game_screen(window):
     # ========== INICIALIZAÇÃO ==========
     clock = pygame.time.Clock()
     assets = load_assets()
     background = pygame.transform.scale(assets['background'], (WIDTH, HEIGHT))
-    
+    player_alive = True
     # ========== GRUPOS DE SPRITES ==========
     all_sprites = pygame.sprite.Group()
     all_blocks = pygame.sprite.Group()
@@ -47,26 +48,14 @@ def game_screen(window):
     player = Player(groups, assets, all_blocks)
     all_players.add(player)
     all_sprites.add(player)
-    
-    # Inimigos
-    zombies = [
-        Zombie(groups, assets, all_blocks),
-        Zombie(groups, assets, all_blocks),
-        Zombie(groups, assets, all_blocks)
-    ]
-    
-    bats = [
-        Bat(groups, assets),
-        Bat(groups, assets)
-    ]
-    
-    ghosts = [
-        Ghost(groups, assets, all_blocks),
-        Ghost(groups, assets, all_blocks)
-    ]
-    
-    # Adiciona todos os inimigos aos grupos
-    for enemy in zombies + bats + ghosts:
+    # ==== MUITOS INIMIGOS NO TOPO ====
+    for i in range(10):  # ajuste a quantidade
+        enemy = random.choice([Zombie(groups, assets, all_blocks),
+                           Ghost(groups, assets, all_blocks),
+                           Bat(groups, assets, all_blocks)])
+    # posição aleatória no topo
+        enemy.rect.x = random.randint(0, WIDTH)
+        enemy.rect.y = random.randint(0, HEIGHT)  # topo da tela
         all_sprites.add(enemy)
         all_enemies.add(enemy)
 
@@ -76,6 +65,9 @@ def game_screen(window):
     pygame.key.set_repeat(1, 10)
     pygame.mixer.music.play(loops=-1)
     while running:
+        # ===== CÂMERA =====
+        camera_x = -player.rect.centerx + WIDTH // 2
+        camera_y = -player.rect.centery + HEIGHT // 2
         clock.tick(FPS)
         
         # ========== PROCESSAMENTO DE EVENTOS ==========
@@ -110,8 +102,7 @@ def game_screen(window):
         
         # Movimento dos inimigos em direção ao jogador
         for enemy in all_enemies:
-            if hasattr(enemy, 'move_to_player'):
-                enemy.move_to_player(player, assets)
+            enemy.move_to_player(player, assets)
         
         # Detecção de colisões
         pygame.sprite.groupcollide(all_enemies, all_attacks, True, True, pygame.sprite.collide_mask)
@@ -129,7 +120,7 @@ def game_screen(window):
         camera_y = -player.rect.centery + HEIGHT // 2
         
         for sprite in all_sprites:
-            window.blit(sprite.image, (sprite.rect.x, sprite.rect.y + camera_y))
+            window.blit(sprite.image, (sprite.rect.x + camera_x, sprite.rect.y + camera_y))
         font = pygame.font.Font(None, 36)
         hp_text = font.render(f"HP: {player.hp}", True, (255, 0, 0))
         window.blit(hp_text, (10, 10))
