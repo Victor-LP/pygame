@@ -79,11 +79,12 @@ def load_assets():
     assets[START_IMG] = pygame.transform.scale_by(assets[START_IMG], BAT_SCALE)
 
     pygame.mixer.music.load('assets/snd/musicamedieval3min.wav')
-    pygame.mixer.music.set_volume(0.8)
+    pygame.mixer.music.set_volume(0.4)
     musica_medieval = pygame.mixer.Sound('assets/snd/musicamedieval3min.wav')
     assets[SOM_ESPADA] = pygame.mixer.Sound('assets/snd/somespada.wav')
-    assets[SOM_PULO] = pygame.mixer.Sound('assets/snd/jump1.wav')
-    assets[SOM_PULO].set_volume(0.5)
+    assets[SOM_ESPADA].set_volume(0.4)
+    assets[SOM_PULO] = pygame.mixer.Sound('assets/snd/flapsound.wav')
+    assets[SOM_PULO].set_volume(0.7)
     assets[SOM_DANO] = pygame.mixer.Sound('assets/snd/hurt1.wav')
-    assets[SOM_DANO].set_volume(0.6)
+    assets[SOM_DANO].set_volume(0.3)
     return assets
