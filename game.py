@@ -1,5 +1,5 @@
 import pygame
-from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK, GAME_OVER, INIT, OBJECTIVE, GAME_WON
+from config import FPS, GRAY, WIDTH, HEIGHT, BLOCK_WIDTH, BLOCK_HEIGHT, MAP, BLOCK, GAME_OVER, INIT, GAME_WON, OBJECTIVE
 from assets import load_assets
 from sprites import Tile, Player, Zombie, Bat, Ghost, Objective
 import random
