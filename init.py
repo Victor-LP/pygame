@@ -1,6 +1,6 @@
 import pygame
 from config import WIDTH, HEIGHT, FPS, INIT, GAME, QUIT, TUTORIAL
-from assets import load_assets, START_IMG, BACKGROUND_IMG, GAME_OVER_IMG, GAME_WON_IMG
+from assets import load_assets, START_IMG, BACKGROUND_IMG, GAME_OVER_IMG, GAME_WON_IMG, FONTE
 
 def _draw_button(surface, rect, hovered):
     borda = (32, 43, 53) if hovered else (165, 23, 16)
@@ -82,19 +82,18 @@ def tutorial_screen(window):
     
     bg = pygame.transform.scale(assets[BACKGROUND_IMG], (WIDTH, HEIGHT))
     
-    font = pygame.font.Font(None, 48)
     text_lines = [
-        "CONTROLES:",
-        "A/D   - Andar esquerda/direita",
-        "W     - Pular",
-        "SPACE - Atacar",
-        "M     - Menu",
-        "ESC   - Fechar Jogo",
+        "CONTROLES",
+        "A e D para se Mover para esquerda ou direita",
+        "W para Pular",
+        "SPACE para Atacar",
+        "M para Abrir o Menu",
+        "ESC para Fechar o Jogo",
         "",
         "Pressione ENTER para continuar"
     ]
     
-    rendered_lines = [font.render(line, True, (255, 255, 255)) for line in text_lines]
+    rendered_lines = [assets[FONTE].render(line, True, (255, 255, 255)) for line in text_lines]
     pygame.mixer.music.fadeout(500)
     while True:
         clock.tick(FPS)
