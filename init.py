@@ -19,9 +19,9 @@ def title_screen(window):
     start_img = assets.get(START_IMG) or assets.get(BACKGROUND_IMG)
     bg = pygame.transform.scale(start_img, (WIDTH, HEIGHT))
 
-    btn_w, btn_h = 395, 120
+    btn_w, btn_h = 409, 122
     btn_rect = pygame.Rect(0, 0, btn_w, btn_h)
-    btn_rect.center = (WIDTH // 2.05, int(HEIGHT * 0.645))
+    btn_rect.center = (WIDTH // 2.035, int(HEIGHT * 0.649))
 
     while True:
         clock.tick(FPS)
@@ -53,9 +53,9 @@ def game_over_screen(window):
 
     bg = pygame.transform.scale(assets[GAME_OVER_IMG], (WIDTH, HEIGHT))
 
-    btn_w, btn_h = 325, 120
+    btn_w, btn_h = 315, 120
     btn_rect = pygame.Rect(0, 0, btn_w, btn_h)
-    btn_rect.center = (WIDTH // 2.042, int(HEIGHT * 0.628))
+    btn_rect.center = (WIDTH // 2.027, int(HEIGHT * 0.634))
 
     while True:
         clock.tick(FPS)

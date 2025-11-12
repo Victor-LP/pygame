@@ -7,7 +7,7 @@ def main():
     pygame.init()
     pygame.mixer.init()
     pygame.display.set_caption('Castle Insper')
-    state = INIT
+    state = GAME_OVER
     while state != QUIT:
         if state == INIT:
             state = title_screen(window)
