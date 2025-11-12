@@ -90,7 +90,8 @@ def tutorial_screen(window):
         "M para Abrir o Menu",
         "ESC para Fechar o Jogo",
         "",
-        "Pressione ENTER para continuar"
+        "Pressione ENTER para continuar", 
+        "Objetivo PEGAR TODOS OS BAUS"
     ]
     
     rendered_lines = [assets[FONTE].render(line, True, (255, 255, 255)) for line in text_lines]
