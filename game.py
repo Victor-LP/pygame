@@ -94,13 +94,13 @@ def game_screen(window):
             elif event.type == pygame.KEYDOWN:
                 keys_down[event.key] = True
                 
-                if event.key == pygame.K_a:
+                if event.key == pygame.K_LEFT:
                     player.direction = -1
                     player.looking = -1
-                elif event.key == pygame.K_d:
+                elif event.key == pygame.K_RIGHT:
                     player.direction = 1
                     player.looking = 1
-                elif event.key == pygame.K_w:
+                elif event.key == pygame.K_UP:
                     player.jump()
                 elif event.key == pygame.K_SPACE:
                     player.attack(assets)
@@ -116,7 +116,7 @@ def game_screen(window):
             elif event.type == pygame.KEYUP:
                 if event.key in keys_down:
                     del keys_down[event.key]
-                if event.key in (pygame.K_a, pygame.K_d):
+                if event.key in (pygame.K_LEFT, pygame.K_RIGHT):
                     player.direction = 0
 
         # ========== ATUALIZAÇÃO DO JOGO ==========

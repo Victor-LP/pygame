@@ -30,7 +30,7 @@ def title_screen(window):
                 return QUIT
             if event.type == pygame.KEYDOWN:
                 if event.key in (pygame.K_RETURN, pygame.K_SPACE):
-                    return GAME
+                    return TUTORIAL
                 if event.key == pygame.K_ESCAPE:
                     return QUIT
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -84,8 +84,8 @@ def tutorial_screen(window):
     
     text_lines = [
         "CONTROLES",
-        "A e D para se Mover para esquerda ou direita",
-        "W para Pular",
+        "Setas direita e esquerda para se Mover para direita ou esquerda",
+        "Seta UP para Pular",
         "SPACE para Atacar",
         "M para Abrir o Menu",
         "ESC para Fechar o Jogo",
