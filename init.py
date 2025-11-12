@@ -128,9 +128,14 @@ def game_won_screen(window):
 
     bg = pygame.transform.scale(assets[GAME_WON_IMG], (WIDTH, HEIGHT))
 
-    btn_w, btn_h = 325, 120
+    btn_w, btn_h = 495, 95
+    #PLAY AGAIN
+    btn_play_rect = pygame.Rect(0, 0, btn_w, btn_h)
+    btn_play_rect.center = (WIDTH // 2, int(HEIGHT * 0.775))
+    #QUIT
     btn_rect = pygame.Rect(0, 0, btn_w, btn_h)
-    btn_rect.center = (WIDTH // 2.042, int(HEIGHT * 0.))
+    btn_rect.center = (WIDTH // 2, int(HEIGHT * 0.90))
+
     while True:
         clock.tick(FPS)
         for event in pygame.event.get():
@@ -142,10 +147,17 @@ def game_won_screen(window):
                 if event.key == pygame.K_ESCAPE:
                     return QUIT
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if btn_rect.collidepoint(pygame.mouse.get_pos()):
+                if btn_play_rect.collidepoint(pygame.mouse.get_pos()):
                     return GAME
+                elif btn_rect.collidepoint(pygame.mouse.get_pos()):
+                    return QUIT
+
 
         window.blit(bg, (0, 0))
-        hovered = btn_rect.collidepoint(pygame.mouse.get_pos())
-        pygame.draw.rect(window, (255, 0, 0), btn_rect, width=4 if hovered else 2, border_radius=8)
+        hovered_play = btn_play_rect.collidepoint(pygame.mouse.get_pos())
+        hovered_quit = btn_rect.collidepoint(pygame.mouse.get_pos())
+
+        pygame.draw.rect(window, (255, 0, 0) if hovered_play else (165, 23, 16), btn_play_rect, width=4, border_radius=8)
+        pygame.draw.rect(window, (255, 0, 0) if hovered_quit else (165, 23, 16), btn_rect, width=4, border_radius=8)
+
         pygame.display.flip()
